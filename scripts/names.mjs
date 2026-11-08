@@ -27,9 +27,6 @@ export const PETTY_MAGIC = ["Petty Magic", "Magia Prosta"];
 /** Talent Magia Tajemna – nazwa bazowa (specjalizacja w nawiasie). */
 export const ARCANE_MAGIC = ["Arcane Magic", "Magia Tajemna"];
 
-/** Umiejętność Odporność (test zmęczenia rzucaniem). */
-export const ENDURANCE = ["Endurance", "Odporność"];
-
 /** Umiejętność Język – nazwa bazowa. */
 export const LANGUAGE = ["Language", "Język"];
 
@@ -76,7 +73,7 @@ export const LANGUAGES = {
 /**
  * Dokłada warianty nazw z pliku tłumaczenia (sekcja Aliases), żeby moduł rozpoznawał talenty,
  * języki i Tradycje w kolejnych językach bez zmian w kodzie. Wartości: teksty rozdzielone przecinkami.
- * @param {{ReadWrite?: string, PettyMagic?: string, ArcaneMagic?: string, Language?: string, Endurance?: string,
+ * @param {{ReadWrite?: string, PettyMagic?: string, ArcaneMagic?: string, Language?: string,
  *   Lores?: Object<string,string>, Languages?: Object<string,string>}} aliases
  */
 export function addAliases(aliases = {}) {
@@ -88,7 +85,6 @@ export function addAliases(aliases = {}) {
   merge(PETTY_MAGIC, aliases.PettyMagic);
   merge(ARCANE_MAGIC, aliases.ArcaneMagic);
   merge(LANGUAGE, aliases.Language);
-  merge(ENDURANCE, aliases.Endurance);
   for (const [key, value] of Object.entries(aliases.Lores ?? {})) merge(LORE_NAMES[key] ??= [], value);
   for (const [key, value] of Object.entries(aliases.Languages ?? {})) merge(LANGUAGES[key] ??= [], value);
 }

@@ -8,7 +8,6 @@ import { LANGUAGES } from "./names.mjs";
 import { requirementBadges } from "./requirements.mjs";
 import { castFromScroll, inscribeSpell, scrollReading } from "./scrolls.mjs";
 import { getSettings } from "./settings.mjs";
-import { enduranceEnabled, getEndurance } from "./endurance.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const TextEditorImpl = () => foundry.applications.ux.TextEditor.implementation;
@@ -104,7 +103,6 @@ export class ScrollApp extends HandlebarsApplicationMixin(ApplicationV2) {
         label: b.key === "language" ? t("Badge.language", { language: languageLabel(data.language) }) : t(`Badge.${b.key}`)
       })) : [],
       actorName: actor?.name,
-      endurance: actor && enduranceEnabled() ? getEndurance(actor) : null,
       canCast: Boolean(actor?.isOwner && spell && reading.readable && count > 0),
       note: !spell ? "" : !actor ? t("Scroll.NoteNoActor") : !reading.readable ? t("Scroll.CannotRead")
         : settings.consumeOnFailure ? t("Scroll.NoteConsume") : t("Scroll.NoteConsumeOnSuccess"),

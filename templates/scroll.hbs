@@ -12,11 +12,6 @@
           <i class="fa-solid {{#if ok}}fa-check{{else}}fa-xmark{{/if}}"></i> {{label}}
         </span>
       {{/each}}
-      {{#if endurance}}
-        <span class="grimoire-badge endurance {{#if (lt endurance.value 0)}}missing{{else}}ok{{/if}}" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Endurance.Name'}}">
-          <i class="fa-solid fa-hourglass-half"></i> {{localize "WFRP4E_GRIMOIRE.Endurance.Badge" value=endurance.display max=endurance.max}}
-        </span>
-      {{/if}}
       {{#if canEdit}}
         <button type="button" class="scroll-edit-toggle {{#if editMode}}active{{/if}}" data-action="toggleEdit" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Scroll.Edit'}}">
           <i class="fa-solid fa-feather-pointed"></i>

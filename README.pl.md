@@ -2,7 +2,7 @@
 
 [English](README.md) | **Polski**
 
-Księgi zaklęć dla **WFRP4e 10.x**: osobny dział w ekwipunku i okno otwartej księgi ze spisem zaklęć według Tradycji, pełnymi szczegółami czaru, rzucaniem z księgi i zapamiętywaniem zaklęć za zgodą MG. Do tego zwoje magiczne i opcjonalne zmęczenie rzucaniem.
+Księgi zaklęć dla **WFRP4e 10.x**: osobny dział w ekwipunku i okno otwartej księgi ze spisem zaklęć według Tradycji, pełnymi szczegółami czaru, rzucaniem z księgi i zapamiętywaniem zaklęć za zgodą MG. Do tego zwoje magiczne.
 
 ## 📖 Jak to działa
 
@@ -37,14 +37,6 @@ Gdy księga jest przy postaci, każde zaklęcie, które postać może z niej rzu
 * Rzucić ze zwoju może każdy, kto umie go odczytać (Czytanie/Pisanie i jego język, jeśli wymagane); znajomość Tradycji nie jest potrzebna.
 * Makro MG na losowy zwój: `game.modules.get("wfrp4e-grimoires").api.scrolls.random({ lore: "fire", maxCN: 8, actor })` (bez `actor` zwój trafia do katalogu przedmiotów).
 
-## ⏳ Zmęczenie rzucaniem (opcjonalna zasada domowa)
-
-Domyślnie wyłączone. Po włączeniu każda postać ma pulę **Wytrzymałości Magicznej** (Bonus Wytrzymałości + 2 × Bonus Siły Woli albo inny wzór):
-
-* Rzucanie kosztuje PM zaklęcia (bazowy albo efektywny), a splatanie i zwoje stałą wartość. Przerzucony test nie kosztuje drugi raz.
-* Poniżej zera postać wykonuje test Odporności, zaczynający się jako Wymagający i trudniejący co krok; porażka daje stan Zmęczenie.
-* Wytrzymałość Magiczna wraca w tempie Bonusu Siły Woli na godzinę czasu gry; w API jest `endurance.rest(actor)` na pełny odpoczynek.
-* Pula jest widoczna jako plakietka w oknach księgi i zwoju; każdy koszt trafia szeptem do MG i gracza.
 
 ## ⚙️ Ustawienia (świat)
 
@@ -54,7 +46,6 @@ Domyślnie wyłączone. Po włączeniu każda postać ma pulę **Wytrzymałości
 * Wymagaj Tradycji zaklęcia (Magia Tajemna danej Tradycji albo Magia Prosta dla magii prostej)
 * Nieudany test zużywa zwój
 * Nazywaj zwoje od zaklęcia
-* Zmęczenie rzucaniem: włączenie, wzór maksimum, bazowy albo efektywny PM, koszt splatania i zwoju, krok trudności, regeneracja z czasem gry
 
 Talenty i umiejętności są rozpoznawane **po angielsku i po polsku** (np. *Arcane Magic (Life)* / *Magia Tajemna (Życia)*, *Language (Magick)* / *Język (Magiczny)*), niezależnie od języka interfejsu Foundry. Postać zna też Tradycję, jeśli zna już jakieś jej zaklęcie.
 

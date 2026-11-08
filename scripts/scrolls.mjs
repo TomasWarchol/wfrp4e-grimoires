@@ -36,7 +36,7 @@ export async function castFromScroll(scroll) {
 
   let test;
   try {
-    // Oznaczenie testu ze zwoju (koszt zmęczenia rzucaniem liczony jak dla zwoju)
+    // Oznaczenie testu ze zwoju (dla innych modułów i makr)
     test = await actor.setupCast(spell, { appendTitle: ` – ${t("Scroll.FromScroll")}`, [MODULE_ID]: { scroll: true } });
     if (test?.roll) await test.roll();
   } catch (err) {

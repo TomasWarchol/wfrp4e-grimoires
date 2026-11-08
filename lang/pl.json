@@ -115,21 +115,7 @@
       "ConsumeOnFailureName": "Nieudany test zużywa zwój",
       "ConsumeOnFailureHint": "Gdy wyłączone, zwój zużywa się tylko po udanym teście rzucania.",
       "RenameScrollsName": "Nazywaj zwoje od zaklęcia",
-      "RenameScrollsHint": "Zapisanie zaklęcia zmienia nazwę zwoju, np. „Zwój: Kula ognia”.",
-      "EnduranceEnabledName": "Zmęczenie rzucaniem (zasada domowa)",
-      "EnduranceEnabledHint": "Postacie mają pulę Wytrzymałości Magicznej, którą zużywa rzucanie, splatanie i zwoje. Poniżej zera wykonują test Odporności albo dostają stan Zmęczenie.",
-      "EnduranceFormulaName": "Maksymalna Wytrzymałość Magiczna",
-      "EnduranceFormulaHint": "Jak liczyć maksymalną Wytrzymałość Magiczną postaci.",
-      "EnduranceUseBaseCNName": "Rzucanie kosztuje bazowy PM",
-      "EnduranceUseBaseCNHint": "Gdy wyłączone, rzucanie kosztuje efektywny PM (np. podwójny przy rzucaniu z księgi).",
-      "EnduranceChannelCostName": "Wytrzymałość Magiczna za test splatania",
-      "EnduranceChannelCostHint": "Zużywana przy każdym teście splatania.",
-      "EnduranceScrollCostName": "Wytrzymałość Magiczna za zwój",
-      "EnduranceScrollCostHint": "Zużywana przy rzucaniu ze zwoju zamiast PM zaklęcia. 0 = zwoje nie męczą.",
-      "EnduranceStepName": "Krok trudności",
-      "EnduranceStepHint": "Poniżej zera test Odporności zaczyna się jako Wymagający i trudnieje o stopień co tyle punktów (najwyżej Bardzo Trudny).",
-      "EnduranceAutoRegenName": "Regeneracja z czasem gry",
-      "EnduranceAutoRegenHint": "Postacie odzyskują Bonus Siły Woli Wytrzymałości Magicznej na godzinę czasu gry (wymaga upływu czasu w zegarze gry)."
+      "RenameScrollsHint": "Zapisanie zaklęcia zmienia nazwę zwoju, np. „Zwój: Kula ognia”."
     },
     "Aliases": {
       "ReadWrite": "Czytanie/Pisanie",
@@ -165,8 +151,7 @@
         "wastelander": "Jałowej Krainy",
         "battleTongue": "Bitewny",
         "guilder": "Gildii"
-      },
-      "Endurance": "Odporność"
+      }
     },
     "Scroll": {
       "NewScroll": "Pusty zwój magiczny",
@@ -186,17 +171,6 @@
       "NoteNoActor": "Daj zwój postaci, aby z niego rzucić.",
       "NoteConsume": "Odczytanie zwoju rzuca zaklęcie ze zwykłym PM; zwój zużywa się niezależnie od wyniku testu.",
       "NoteConsumeOnSuccess": "Odczytanie zwoju rzuca zaklęcie ze zwykłym PM; zwój zużywa się tylko po udanym teście."
-    },
-    "Endurance": {
-      "Name": "Wytrzymałość Magiczna",
-      "Badge": "WM {value}/{max}",
-      "Spent": "{label}: −{amount} Wytrzymałości Magicznej (teraz {value}/{max}).",
-      "TestTitle": "Zmęczenie rzucaniem",
-      "Formula": {
-        "tbPlus2Wpb": "Bonus Wytrzymałości + 2 × Bonus Siły Woli",
-        "tbPlusWpb": "Bonus Wytrzymałości + Bonus Siły Woli",
-        "tbTimesWpb": "Bonus Wytrzymałości × Bonus Siły Woli"
-      }
     }
   }
 }

@@ -2,7 +2,7 @@
 
 **English** | [Polski](README.pl.md)
 
-Spellbooks for **WFRP4e 10.x**: their own inventory section and an open-book window that lists the spells by Lore, with full spell details, casting from the book and memorising spells with GM approval. Plus magic scrolls and optional casting fatigue.
+Spellbooks for **WFRP4e 10.x**: their own inventory section and an open-book window that lists the spells by Lore, with full spell details, casting from the book and memorising spells with GM approval. Plus magic scrolls.
 
 ## 📖 How it works
 
@@ -37,14 +37,6 @@ While a grimoire is carried, every spell the character can cast from it appears 
 * Anyone who can read the scroll (Read/Write and its language, if required) can cast from it; knowing the Lore isn't needed.
 * GM macro for a random scroll: `game.modules.get("wfrp4e-grimoires").api.scrolls.random({ lore: "fire", maxCN: 8, actor })` (without `actor` it goes to the Items directory).
 
-## ⏳ Casting fatigue (optional house rule)
-
-Off by default. When on, every character has a pool of **Magical Endurance** (Toughness Bonus + 2 × Willpower Bonus, or another formula):
-
-* Casting costs the spell's CN (base or effective), channelling and scrolls cost a fixed amount. A rerolled test doesn't cost twice.
-* Below zero the character tests Endurance, Challenging and harder with every step, and gains a Fatigued Condition on a failure.
-* Magical Endurance comes back at Willpower Bonus per hour of game time; the API has `endurance.rest(actor)` for a full rest.
-* The pool is shown as a badge in the grimoire and scroll windows; each cost is whispered to the GM and the player.
 
 ## ⚙️ Settings (world)
 
@@ -54,7 +46,6 @@ Off by default. When on, every character has a pool of **Magical Endurance** (To
 * Require the spell's Lore (Arcane Magic of that Lore, or Petty Magic for petty spells)
 * Failed scroll test uses up the scroll
 * Name scrolls after their spell
-* Casting fatigue: on/off, maximum formula, base or effective CN, channelling and scroll cost, difficulty step, regeneration with game time
 
 Talents and skills are recognised in **English and Polish** (e.g. *Arcane Magic (Life)* / *Magia Tajemna (Życia)*, *Language (Magick)* / *Język (Magiczny)*), whatever language the Foundry interface uses. A character also counts as knowing a Lore if they already know a spell of it.
 

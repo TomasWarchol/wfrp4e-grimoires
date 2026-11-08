@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.3.0
+- Removed the optional casting fatigue (Magical Endurance) house rule: its settings, badge, chat messages and the `endurance` API. Leftover `flags.wfrp4e-grimoires.endurance` on actors are ignored.
+
 ## 0.2.0
 - **Magic scrolls**: a *Books and Documents* trapping marked by the module, holding one spell and a language; quantity = number of scrolls. Own **Magic Scrolls** inventory section, *Make into magic scroll* in the item sheet header.
 - Scroll window (unrolled parchment): spell details, requirement badges, scroll count, **Read and cast** (a normal system casting test with base CN for a spell the character doesn't know; chat cards work as usual) and **To chat**. Edit mode: drop a spell, language.
