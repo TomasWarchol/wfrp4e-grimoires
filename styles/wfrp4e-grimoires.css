@@ -408,10 +408,11 @@
 }
 
 .wfrp4e-grimoires .scroll-rod {
-  flex: 0 0 14px;
+  flex: 0 0 18px;
   margin: 0 -14px;
-  border-radius: 7px;
-  background: linear-gradient(180deg, #8a5a2b, #5a3816 60%, #3b2410);
+  border-radius: 9px;
+  background: linear-gradient(180deg, #b07a3e, #6b4219 55%, #3b2410);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.45);
 }
 
 .wfrp4e-grimoires .scroll-head,

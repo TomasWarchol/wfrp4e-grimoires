@@ -29,6 +29,9 @@ export async function castFromScroll(scroll) {
 
   const spellData = foundry.utils.deepClone(data.spell.data);
   foundry.utils.setProperty(spellData, "system.memorized.value", true);
+  // Test wymaga identyfikatora przedmiotu; zaklęcia nie ma na karcie, więc system odtworzy je
+  // z danych zapisanych przez okno rzutu (itemData)
+  spellData._id = foundry.utils.randomID();
   const spell = new Item.implementation(spellData, { parent: actor });
 
   let test;

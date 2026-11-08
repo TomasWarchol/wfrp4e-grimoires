@@ -1,11 +1,12 @@
 # Changelog
 
-## 0.2.0 (in progress)
+## 0.2.0
 - **Magic scrolls**: a *Books and Documents* trapping marked by the module, holding one spell and a language; quantity = number of scrolls. Own **Magic Scrolls** inventory section, *Make into magic scroll* in the item sheet header.
 - Scroll window (unrolled parchment): spell details, requirement badges, scroll count, **Read and cast** (a normal system casting test with base CN for a spell the character doesn't know; chat cards work as usual) and **To chat**. Edit mode: drop a spell, language.
 - A scroll is used up after the test (setting: only after a successful test). The last scroll crumbles.
 - Random scroll API: `api.scrolls.random({ lore, maxCN, actor })`.
 - **Casting fatigue** (optional house rule, off by default): Magical Endurance pool (formula setting), spent by casting (base or effective CN), channelling and scrolls; below zero an Endurance test of rising difficulty, Fatigued on failure; regeneration with game time; badge in the grimoire and scroll windows; API `endurance.get/set/rest`.
+- Tested with Foundry v14 (build 370) and WFRP4e 10.1.2: scroll casting and consumption, casting fatigue costs and the Endurance test.
 
 ## 0.1.0
 - First version: spellbooks for WFRP4e 10.x.

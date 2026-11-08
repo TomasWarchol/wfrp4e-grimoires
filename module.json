@@ -2,7 +2,7 @@
   "id": "wfrp4e-grimoires",
   "title": "WFRP4e – Grimoires",
   "description": "Spellbooks for WFRP4e 10.x: a separate inventory section and an open-book window listing the spells by Lore, with full spell details, casting from the book and learning spells for XP with GM approval.",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "compatibility": {
     "minimum": "14",
     "verified": "14",
