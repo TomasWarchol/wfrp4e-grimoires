@@ -1,0 +1,381 @@
+/* WFRP4e – Grimoires: okno księgi zaklęć */
+
+.wfrp4e-grimoires.grimoire-window {
+  --grimoire-paper: #f3e6c4;
+  --grimoire-paper-dark: #e6d3a3;
+  --grimoire-ink: #3b2814;
+  --grimoire-ink-soft: #6e5232;
+  --grimoire-accent: #8a2c12;
+  --grimoire-ok: #2f5d1e;
+  --grimoire-missing: #8a1f1f;
+}
+
+.wfrp4e-grimoires.grimoire-window .window-content {
+  padding: 0;
+  overflow: hidden;
+}
+
+.wfrp4e-grimoires .grimoire {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--grimoire-cover);
+  padding: 10px;
+  gap: 8px;
+}
+
+/* Pasek okładki */
+.wfrp4e-grimoires .grimoire-cover-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: #f6e7c1;
+  font-family: var(--font-header, serif);
+}
+
+.wfrp4e-grimoires .grimoire-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 1rem;
+}
+
+.wfrp4e-grimoires .grimoire-owner {
+  opacity: 0.8;
+}
+
+.wfrp4e-grimoires .grimoire-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.wfrp4e-grimoires .grimoire-badge {
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(246, 231, 193, 0.92);
+  color: var(--grimoire-ok);
+  white-space: nowrap;
+}
+
+.wfrp4e-grimoires .grimoire-badge.missing {
+  color: var(--grimoire-missing);
+}
+
+.wfrp4e-grimoires .grimoire-edit-toggle {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  line-height: 1;
+  padding: 0;
+  color: #f6e7c1;
+  background: transparent;
+  border: 1px solid rgba(246, 231, 193, 0.5);
+}
+
+.wfrp4e-grimoires .grimoire-edit-toggle.active {
+  background: rgba(246, 231, 193, 0.25);
+}
+
+/* Pasek edycji */
+.wfrp4e-grimoires .grimoire-editbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: rgba(246, 231, 193, 0.9);
+  color: var(--grimoire-ink);
+  font-size: 0.8rem;
+}
+
+.wfrp4e-grimoires .grimoire-editbar label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wfrp4e-grimoires .grimoire-editbar input[type="text"] {
+  width: 120px;
+}
+
+.wfrp4e-grimoires .grimoire-editbar input[type="color"] {
+  width: 36px;
+  height: 24px;
+  padding: 0;
+  border: none;
+}
+
+.wfrp4e-grimoires .grimoire-drop-hint {
+  color: var(--grimoire-ink-soft);
+  font-style: italic;
+}
+
+/* Rozkładówka */
+.wfrp4e-grimoires .grimoire-spread {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px minmax(0, 1.3fr);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--grimoire-paper);
+  perspective: 1600px;
+}
+
+.wfrp4e-grimoires .grimoire-spine {
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.18), rgba(0, 0, 0, 0.04) 40%, rgba(0, 0, 0, 0.04) 60%, rgba(0, 0, 0, 0.18));
+}
+
+.wfrp4e-grimoires .grimoire-page {
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 16px;
+  color: var(--grimoire-ink);
+  font-family: var(--font-body, serif);
+}
+
+.wfrp4e-grimoires .grimoire-page.left {
+  background: linear-gradient(90deg, var(--grimoire-paper) 85%, var(--grimoire-paper-dark));
+}
+
+.wfrp4e-grimoires .grimoire-page.right {
+  background: linear-gradient(270deg, var(--grimoire-paper) 85%, var(--grimoire-paper-dark));
+  transform-origin: left center;
+}
+
+.wfrp4e-grimoires .grimoire-page.right.turning {
+  animation: wfrp4e-grimoires-turn 0.35s ease-out;
+}
+
+@keyframes wfrp4e-grimoires-turn {
+  from { transform: rotateY(-35deg); opacity: 0.35; }
+  to { transform: rotateY(0deg); opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wfrp4e-grimoires .grimoire-page.right.turning { animation: none; }
+}
+
+/* Spis treści */
+.wfrp4e-grimoires .grimoire-search {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 8px;
+  color: var(--grimoire-ink-soft);
+}
+
+.wfrp4e-grimoires .grimoire-search input {
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--grimoire-ink);
+  border-color: var(--grimoire-paper-dark);
+}
+
+.wfrp4e-grimoires .grimoire-toc-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.wfrp4e-grimoires .grimoire-lore {
+  margin: 12px 0 4px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--grimoire-paper-dark);
+  color: var(--grimoire-accent);
+  font-family: var(--font-header, serif);
+  font-size: 0.95rem;
+}
+
+.wfrp4e-grimoires .grimoire-entry {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.wfrp4e-grimoires .grimoire-entry:hover {
+  background: rgba(138, 44, 18, 0.1);
+}
+
+.wfrp4e-grimoires .grimoire-entry.selected {
+  background: rgba(138, 44, 18, 0.2);
+}
+
+.wfrp4e-grimoires .grimoire-entry-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.wfrp4e-grimoires .grimoire-entry.status-readOnly .grimoire-entry-name,
+.wfrp4e-grimoires .grimoire-entry.status-unreadable .grimoire-entry-name {
+  color: var(--grimoire-ink-soft);
+}
+
+.wfrp4e-grimoires .grimoire-entry.status-known i {
+  color: var(--grimoire-ok);
+}
+
+.wfrp4e-grimoires .grimoire-entry-cn {
+  font-size: 0.8rem;
+  color: var(--grimoire-ink-soft);
+  white-space: nowrap;
+}
+
+.wfrp4e-grimoires .grimoire-entry-edit {
+  display: flex;
+  gap: 6px;
+  font-size: 0.8rem;
+}
+
+.wfrp4e-grimoires .grimoire-empty {
+  color: var(--grimoire-ink-soft);
+  font-style: italic;
+}
+
+/* Szczegóły czaru */
+.wfrp4e-grimoires .grimoire-details {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.wfrp4e-grimoires .grimoire-blank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  color: var(--grimoire-paper-dark);
+}
+
+.wfrp4e-grimoires .grimoire-details-lore {
+  color: var(--grimoire-accent);
+  font-size: 0.85rem;
+}
+
+.wfrp4e-grimoires .grimoire-details-name {
+  margin: 2px 0 8px;
+  border: none;
+  color: var(--grimoire-ink);
+  font-family: var(--font-header, serif);
+  font-size: 1.6rem;
+}
+
+.wfrp4e-grimoires .grimoire-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.wfrp4e-grimoires .grimoire-stats div {
+  padding: 4px 6px;
+  border-radius: 4px;
+  background: rgba(138, 44, 18, 0.08);
+  font-size: 0.75rem;
+}
+
+.wfrp4e-grimoires .grimoire-stats span {
+  display: block;
+  color: var(--grimoire-ink-soft);
+}
+
+.wfrp4e-grimoires .grimoire-stats b {
+  font-size: 0.85rem;
+}
+
+.wfrp4e-grimoires .grimoire-stats small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--grimoire-ink-soft);
+}
+
+.wfrp4e-grimoires .grimoire-description {
+  line-height: 1.5;
+}
+
+.wfrp4e-grimoires .grimoire-note {
+  margin: 10px 0 0;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--grimoire-ink-soft);
+}
+
+.wfrp4e-grimoires .grimoire-note.status-castable {
+  color: var(--grimoire-ok);
+}
+
+.wfrp4e-grimoires .grimoire-illegible-note {
+  color: var(--grimoire-missing);
+}
+
+.wfrp4e-grimoires .grimoire-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.wfrp4e-grimoires .grimoire-actions button {
+  flex: 0 0 auto;
+  width: auto;
+  color: var(--grimoire-ink);
+  background: rgba(255, 255, 255, 0.35);
+  border: 1px solid var(--grimoire-paper-dark);
+}
+
+.wfrp4e-grimoires .grimoire-actions button.primary {
+  color: #f6e7c1;
+  background: var(--grimoire-accent);
+  border-color: var(--grimoire-accent);
+}
+
+/* Karta postaci */
+.wfrp4e-grimoires-copy {
+  margin-left: 4px;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+/* Karta czatu */
+.wfrp4e-grimoires-chat header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.wfrp4e-grimoires-chat header img {
+  width: 36px;
+  height: 36px;
+  border: none;
+}
+
+.wfrp4e-grimoires-chat h3 {
+  margin: 0;
+}
+
+.wfrp4e-grimoires-chat .lore {
+  font-size: 0.8em;
+  opacity: 0.8;
+}
+
+.wfrp4e-grimoires-chat .stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 6px 0;
+  font-size: 0.85em;
+}
+
+.wfrp4e-grimoires-chat footer {
+  margin-top: 6px;
+  font-size: 0.8em;
+  opacity: 0.7;
+}

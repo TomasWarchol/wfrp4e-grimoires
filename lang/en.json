@@ -1,0 +1,113 @@
+{
+  "WFRP4E_GRIMOIRE": {
+    "Title": "Grimoires",
+    "NewGrimoire": "New Grimoire",
+    "WrittenIn": "Written in {language}",
+    "Search": "Search spells",
+    "Empty": "This grimoire holds no spells.",
+    "EmptyEditable": "This grimoire holds no spells yet. Drag spells here from a compendium, the Items directory or a character sheet.",
+    "Illegible": "The writing means nothing to you.",
+    "CNShort": "CN",
+    "Inventory": {
+      "Section": "Grimoires",
+      "Carried": "Carried",
+      "Open": "Open the grimoire",
+      "CopyTooltip": "From a grimoire – disappears when the grimoire leaves the character. Memorise it to keep it."
+    },
+    "Header": {
+      "Open": "Open grimoire",
+      "Make": "Make into grimoire"
+    },
+    "Badge": {
+      "readWrite": "Read/Write",
+      "language": "Language ({language})",
+      "carried": "Carried",
+      "notCarried": "Not carried"
+    },
+    "Status": {
+      "known": "You know this spell",
+      "castable": "Can be cast from the grimoire",
+      "readOnly": "You can only read it",
+      "unreadable": "You can't read it",
+      "none": "",
+      "unmemorized": "In the grimoire, not memorised",
+      "learnable": "Petty spell you can learn"
+    },
+    "Note": {
+      "known": "You already know this spell; you don't need the grimoire to cast it.",
+      "castable": "You can cast this spell while you carry the grimoire. It is on your sheet as a non-memorised spell with a book icon; its CN is doubled until you memorise it.",
+      "readOnly": "You don't know the Lore of {lore}, so you can only read this spell.",
+      "unreadable": "You can't read this grimoire.",
+      "none": "Give the grimoire to a character to cast from it.",
+      "notCarried": "Mark the grimoire as carried to cast from it.",
+      "unmemorized": "This spell is on your sheet but not memorised: you cast it from the grimoire with doubled CN, and a miscast rolls on the Grimoire Miscast table. Memorise it to cast without the book.",
+      "learnable": "Petty spells are not cast from a grimoire. Memorise this one to add it to your Petty Magic."
+    },
+    "Stat": {
+      "CN": "Casting Number",
+      "Range": "Range",
+      "Target": "Target",
+      "Duration": "Duration",
+      "CNMemorized": "memorised: {cn}"
+    },
+    "Action": {
+      "Cast": "Cast from the grimoire",
+      "Channel": "Channel",
+      "Learn": "Memorise",
+      "Chat": "To chat",
+      "Open": "Spell sheet"
+    },
+    "Edit": {
+      "Toggle": "Edit the grimoire",
+      "Language": "Language",
+      "CustomLanguage": "Other language",
+      "Cover": "Cover",
+      "Describe": "Write description",
+      "DropHint": "Drop spells on the grimoire to add them",
+      "Up": "Move up",
+      "Down": "Move down",
+      "Remove": "Remove",
+      "RemoveTitle": "Remove spell",
+      "RemoveConfirm": "Remove {spell} from the grimoire?"
+    },
+    "Describe": {
+      "Summary": "This grimoire, written in {language}, holds {list}.",
+      "Lore": "{count} × {lore}",
+      "Done": "Grimoire description updated."
+    },
+    "Learn": {
+      "Title": "Memorise a spell",
+      "Confirm": "{user} wants {actor} to memorise <strong>{spell}</strong> (has {current} XP). Allow? The system will then ask for the XP cost.",
+      "Learned": "{actor} memorised <strong>{spell}</strong>.",
+      "Denied": "The GM did not allow memorising this spell.",
+      "NoGM": "A GM must be online to approve memorising a spell.",
+      "Failed": "Memorising the spell failed. See the console (F12) for details."
+    },
+    "Languages": {
+      "magick": "Magick",
+      "reikspiel": "Reikspiel",
+      "classical": "Classical",
+      "bretonnian": "Bretonnian",
+      "tilean": "Tilean",
+      "eltharin": "Eltharin",
+      "khazalid": "Khazalid",
+      "wastelander": "Wastelander",
+      "battleTongue": "Battle Tongue",
+      "guilder": "Guilder"
+    },
+    "Notify": {
+      "OnlySpells": "Only spells can be written into a grimoire.",
+      "AlreadyInBook": "{spell} is already in this grimoire."
+    },
+    "Settings": {
+      "RequireCarriedName": "Grimoire must be carried",
+      "RequireCarriedHint": "Spells can be cast from a grimoire only when it is marked as carried in the inventory.",
+      "RequireReadWriteName": "Require Read/Write",
+      "RequireReadWriteHint": "Characters without the Read/Write talent can't read grimoires.",
+      "RequireLanguageName": "Require the grimoire's language",
+      "RequireLanguageHint": "Characters must know the Language the grimoire is written in (Magick by default).",
+      "RequireLoreName": "Require the spell's Lore",
+      "RequireLoreHint": "Only characters with Arcane Magic in the spell's Lore (or Petty Magic for petty spells) can cast it from a grimoire."
+    }
+  }
+}

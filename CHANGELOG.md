@@ -1,0 +1,15 @@
+# Changelog
+
+## 0.1.0
+- First version: spellbooks for WFRP4e 10.x.
+- A grimoire is a *Books and Documents* trapping marked by the module, with its own **Grimoires** inventory section, a Carried toggle, an open icon and a **+** that creates a new grimoire. *Make into grimoire* in the item sheet header.
+- Open-book window: spells grouped by Lore with search and status markers, spell details with enriched description, page-turn animation, requirement badges, illegible runes for characters who can't read the book.
+- While a grimoire is carried, its castable spells appear in the Magic tab as non-memorised spells (book icon), cast from the grimoire as in the 4e rules (Grimoire Miscast table). They are removed when the grimoire leaves the character or is no longer carried, and restored if a memorised copy is deleted.
+- Spell status follows the sheet: memorised, on the sheet but not memorised, castable, petty spell to learn, read only, unreadable.
+- CN shown as the system computes it: doubled when cast from the grimoire (rituals ×4), with the memorised CN alongside.
+- Petty spells are never cast from a grimoire: no sheet copies, only "Memorise" (one system XP dialog).
+- Memorise with GM approval; the XP cost comes from the system's own Memorize Spell dialog. Ticking M on a grimoire copy keeps the spell for good.
+- Edit mode: drag and drop spells, reorder, remove, language, cover colour, write description.
+- Talents and skills recognised in English and Polish.
+- English and Polish interface.
+- Tested with Foundry v14 (build 370) and WFRP4e 10.1.2.

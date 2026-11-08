@@ -1,0 +1,63 @@
+{
+  "id": "wfrp4e-grimoires",
+  "title": "WFRP4e – Grimoires",
+  "description": "Spellbooks for WFRP4e 10.x: a separate inventory section and an open-book window listing the spells by Lore, with full spell details, casting from the book and learning spells for XP with GM approval.",
+  "version": "0.1.0",
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14",
+    "maximum": "14"
+  },
+  "authors": [
+    {
+      "name": "Tomek (TomasWarchol)",
+      "url": "https://github.com/TomasWarchol",
+      "discord": "tomek"
+    }
+  ],
+  "relationships": {
+    "systems": [
+      {
+        "id": "wfrp4e",
+        "type": "system",
+        "compatibility": {
+          "minimum": "10.0.0"
+        }
+      }
+    ]
+  },
+  "esmodules": [
+    "scripts/main.mjs"
+  ],
+  "styles": [
+    "styles/wfrp4e-grimoires.css"
+  ],
+  "languages": [
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    },
+    {
+      "lang": "pl",
+      "name": "Polski",
+      "path": "lang/pl.json"
+    }
+  ],
+  "flags": {
+    "hotReload": {
+      "extensions": [
+        "css",
+        "hbs",
+        "json"
+      ]
+    }
+  },
+  "url": "https://github.com/TomasWarchol/wfrp4e-grimoires",
+  "manifest": "https://github.com/TomasWarchol/wfrp4e-grimoires/releases/latest/download/module.json",
+  "download": "https://github.com/TomasWarchol/wfrp4e-grimoires/releases/latest/download/module.zip",
+  "bugs": "https://github.com/TomasWarchol/wfrp4e-grimoires/issues",
+  "readme": "https://github.com/TomasWarchol/wfrp4e-grimoires/blob/main/README.md",
+  "changelog": "https://github.com/TomasWarchol/wfrp4e-grimoires/blob/main/CHANGELOG.md",
+  "license": "https://github.com/TomasWarchol/wfrp4e-grimoires/blob/main/LICENSE"
+}

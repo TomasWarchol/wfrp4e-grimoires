@@ -1,0 +1,16 @@
+<div class="wfrp4e-grimoires-chat">
+  <header>
+    {{#if img}}<img src="{{img}}" alt="">{{/if}}
+    <div>
+      <h3>{{name}}</h3>
+      <span class="lore">{{lore}}{{#if cn}} · {{localize "WFRP4E_GRIMOIRE.CNShort"}} {{cn}}{{/if}}</span>
+    </div>
+  </header>
+  <div class="stats">
+    {{#if range}}<span><b>{{localize "WFRP4E_GRIMOIRE.Stat.Range"}}:</b> {{range}}</span>{{/if}}
+    {{#if target}}<span><b>{{localize "WFRP4E_GRIMOIRE.Stat.Target"}}:</b> {{target}}</span>{{/if}}
+    {{#if duration}}<span><b>{{localize "WFRP4E_GRIMOIRE.Stat.Duration"}}:</b> {{duration}}</span>{{/if}}
+  </div>
+  <div class="description">{{{description}}}</div>
+  <footer><i class="fa-solid fa-book-journal-whills"></i> {{book}}</footer>
+</div>

@@ -1,0 +1,113 @@
+{
+  "WFRP4E_GRIMOIRE": {
+    "Title": "Księgi zaklęć",
+    "NewGrimoire": "Nowa księga zaklęć",
+    "WrittenIn": "Spisana w języku: {language}",
+    "Search": "Szukaj zaklęcia",
+    "Empty": "Ta księga nie zawiera zaklęć.",
+    "EmptyEditable": "Ta księga nie zawiera jeszcze zaklęć. Przeciągnij tu zaklęcia z kompendium, katalogu przedmiotów albo karty postaci.",
+    "Illegible": "To pismo nic ci nie mówi.",
+    "CNShort": "PM",
+    "Inventory": {
+      "Section": "Księgi zaklęć",
+      "Carried": "Przy sobie",
+      "Open": "Otwórz księgę",
+      "CopyTooltip": "Z księgi – zniknie, gdy księga opuści postać. Zapamiętaj, by zachować."
+    },
+    "Header": {
+      "Open": "Otwórz księgę",
+      "Make": "Uczyń księgą zaklęć"
+    },
+    "Badge": {
+      "readWrite": "Czytanie/Pisanie",
+      "language": "Język ({language})",
+      "carried": "Przy sobie",
+      "notCarried": "Nie przy sobie"
+    },
+    "Status": {
+      "known": "Znasz to zaklęcie",
+      "castable": "Możesz rzucić z księgi",
+      "readOnly": "Możesz tylko przeczytać",
+      "unreadable": "Nie możesz przeczytać",
+      "none": "",
+      "unmemorized": "W księdze, niezapamiętane",
+      "learnable": "Magia prosta do nauki"
+    },
+    "Note": {
+      "known": "Znasz już to zaklęcie – księga nie jest potrzebna, by je rzucić.",
+      "castable": "Możesz rzucić to zaklęcie, póki masz księgę przy sobie. Jest na karcie jako niezapamiętane, z ikoną księgi – do czasu zapamiętania ma podwójny PM.",
+      "readOnly": "Nie znasz Tradycji: {lore} – możesz tylko przeczytać to zaklęcie.",
+      "unreadable": "Nie potrafisz przeczytać tej księgi.",
+      "none": "Daj księgę postaci, aby rzucać z niej zaklęcia.",
+      "notCarried": "Oznacz księgę jako noszoną przy sobie, aby z niej rzucać.",
+      "unmemorized": "To zaklęcie jest na twojej karcie, ale niezapamiętane: rzucasz je z księgi z podwójnym PM, a pech losuje się z tabeli Grimoire Miscast. Zapamiętaj je, by rzucać bez księgi.",
+      "learnable": "Magii prostej nie rzuca się z księgi. Zapamiętaj to zaklęcie, by dołączyło do twojej Magii prostej."
+    },
+    "Stat": {
+      "CN": "Poziom Mocy",
+      "Range": "Zasięg",
+      "Target": "Cel",
+      "Duration": "Czas trwania",
+      "CNMemorized": "po zapamiętaniu: {cn}"
+    },
+    "Action": {
+      "Cast": "Rzuć z księgi",
+      "Channel": "Splataj",
+      "Learn": "Zapamiętaj",
+      "Chat": "Na czat",
+      "Open": "Karta zaklęcia"
+    },
+    "Edit": {
+      "Toggle": "Edytuj księgę",
+      "Language": "Język",
+      "CustomLanguage": "Inny język",
+      "Cover": "Oprawa",
+      "Describe": "Napisz opis",
+      "DropHint": "Upuść zaklęcia na księgę, aby je dodać",
+      "Up": "W górę",
+      "Down": "W dół",
+      "Remove": "Usuń",
+      "RemoveTitle": "Usuń zaklęcie",
+      "RemoveConfirm": "Usunąć {spell} z księgi?"
+    },
+    "Describe": {
+      "Summary": "Ta księga, spisana w języku: {language}, zawiera: {list}.",
+      "Lore": "{count} × {lore}",
+      "Done": "Zaktualizowano opis księgi."
+    },
+    "Learn": {
+      "Title": "Zapamiętanie zaklęcia",
+      "Confirm": "{user} chce, by {actor} zapamiętał(a) zaklęcie <strong>{spell}</strong> (ma {current} PD). Zezwolić? System zapyta potem o koszt PD.",
+      "Learned": "{actor} zapamiętuje zaklęcie <strong>{spell}</strong>.",
+      "Denied": "MG nie zezwolił na zapamiętanie tego zaklęcia.",
+      "NoGM": "Do zatwierdzenia zapamiętania zaklęcia potrzebny jest MG online.",
+      "Failed": "Zapamiętanie zaklęcia nie powiodło się. Szczegóły w konsoli (F12)."
+    },
+    "Languages": {
+      "magick": "Magiczny",
+      "reikspiel": "Reikspiel",
+      "classical": "Klasyczny",
+      "bretonnian": "Bretoński",
+      "tilean": "Tileański",
+      "eltharin": "Eltharin",
+      "khazalid": "Khazalid",
+      "wastelander": "Jałowej Krainy",
+      "battleTongue": "Bitewny",
+      "guilder": "Gildii"
+    },
+    "Notify": {
+      "OnlySpells": "Do księgi można wpisać tylko zaklęcia.",
+      "AlreadyInBook": "{spell} jest już w tej księdze."
+    },
+    "Settings": {
+      "RequireCarriedName": "Księga musi być przy sobie",
+      "RequireCarriedHint": "Z księgi można rzucać tylko wtedy, gdy w ekwipunku jest oznaczona jako noszona przy sobie.",
+      "RequireReadWriteName": "Wymagaj Czytania/Pisania",
+      "RequireReadWriteHint": "Postacie bez talentu Czytanie/Pisanie nie mogą czytać ksiąg.",
+      "RequireLanguageName": "Wymagaj języka księgi",
+      "RequireLanguageHint": "Postać musi znać Język, w którym spisano księgę (domyślnie Magiczny).",
+      "RequireLoreName": "Wymagaj Tradycji zaklęcia",
+      "RequireLoreHint": "Rzucać z księgi mogą tylko postacie z Magią Tajemną danej Tradycji (albo Magią Prostą dla magii prostej)."
+    }
+  }
+}
