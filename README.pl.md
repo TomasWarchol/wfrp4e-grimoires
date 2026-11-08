@@ -53,6 +53,20 @@ api.open(item);      // otwarcie okna księgi
 api.read(item);      // { language, cover, spells: [...] }
 ```
 
+## 🌐 Języki
+
+Angielski i polski są wbudowane. Aby dodać kolejny język:
+
+```bash
+npm run lang:add -- de "Deutsch"
+```
+
+Polecenie tworzy `lang/de.json` (kopię tekstów angielskich) i dopisuje go do `module.json`. Przetłumacz teksty; każdy pominięty klucz pokaże się po angielsku, a `npm run check` wypisze nieprzetłumaczone klucze. Tłumaczenia mile widziane jako pull requesty.
+
+Dla nowego języka uzupełnij też sekcję `Aliases`: nazwy talentów Czytanie/Pisanie, Magia Prosta i Magia Tajemna, umiejętności Język, Tradycji i języków ksiąg tak, jak brzmią w kompendiach w tym języku (rozdzielone przecinkami). Moduł rozpozna wtedy talenty i umiejętności postaci w tym języku.
+
+Osobny moduł tłumaczenia może też dodać język bez zmian w tym module: deklaruje wpis `languages` z `"lang": "de"`, wskazujący na własny plik z tymi samymi kluczami.
+
 ## 🙏 Podziękowania
 
 Inspiracja: księgi z *Forien's Armoury* autorstwa Foriena. Napisany od zera dla Foundry v14 i WFRP4e 10.x.

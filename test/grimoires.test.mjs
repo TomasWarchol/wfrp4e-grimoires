@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasSpecialised, LANGUAGE, ARCANE_MAGIC, normalize, splitSpecialisation, loreVariants } from "../scripts/names.mjs";
+import { addAliases, hasSpecialised, LANGUAGE, ARCANE_MAGIC, READ_WRITE, normalize, splitSpecialisation, loreVariants, languageVariants } from "../scripts/names.mjs";
 import { evaluateReading, knowsLore, requirementBadges, spellStatus } from "../scripts/requirements.mjs";
 import {
   addSpell, emptyGrimoire, groupByLore, illegible, isGrimoire, effectiveCN, moveSpell, readGrimoire,
@@ -39,6 +39,23 @@ describe("names", () => {
     expect(hasSpecialised(["Arcane Magic (Life)"], ARCANE_MAGIC, loreVariants("life", "Life"))).toBe(true);
     expect(hasSpecialised(["Language (Magick)"], LANGUAGE, ["Magick", "Magiczny"])).toBe(true);
     expect(hasSpecialised(["Magia Tajemna (Ognia)"], ARCANE_MAGIC, loreVariants("life", "Life"))).toBe(false);
+  });
+});
+
+describe("aliases z plików tłumaczeń", () => {
+  it("dokłada nazwy z nowego języka bez duplikatów", () => {
+    addAliases({
+      ReadWrite: "Lesen/Schreiben, Czytanie/Pisanie",
+      ArcaneMagic: "Arkane Magie",
+      Language: "Sprache",
+      Lores: { fire: "Feuers" },
+      Languages: { magick: "Magie", runic: "Runisch" }
+    });
+    expect(READ_WRITE.filter((v) => normalize(v) === "czytanie/pisanie")).toHaveLength(1);
+    expect(hasSpecialised(["Arkane Magie (Feuers)"], ARCANE_MAGIC, loreVariants("fire", "Fire"))).toBe(true);
+    expect(hasSpecialised(["Sprache (Magie)"], LANGUAGE, languageVariants("magick"))).toBe(true);
+    expect(languageVariants("runic")).toEqual(["Runisch"]);
+    addAliases(undefined);
   });
 });
 

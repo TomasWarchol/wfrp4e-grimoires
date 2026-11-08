@@ -1,7 +1,8 @@
 /**
  * Sprawdza moduł przed wydaniem:
  *  - module.json: wymagane pola, wersja semver, istnienie plików esmodules/styles/languages,
- *  - pliki tłumaczeń: poprawny JSON i ten sam zestaw kluczy co lang/en.json.
+ *  - pliki tłumaczeń: poprawny JSON; angielski i polski obowiązkowe i kompletne,
+ *    inne języki mogą być częściowe (brakujące klucze = ostrzeżenie, Foundry pokaże tekst angielski).
  *
  * Użycie: node tools/validate-module.mjs [katalog-modułu]
  * Kod wyjścia 1 przy błędach.
@@ -10,6 +11,9 @@ import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 const root = resolve(process.argv[2] ?? ".");
+
+/** Języki obowiązkowe w każdym module serii (kompletne tłumaczenie). */
+const REQUIRED_LANGUAGES = ["en", "pl"];
 const errors = [];
 const warnings = [];
 
@@ -58,6 +62,12 @@ if (manifest) {
   const baseData = base ? readJson(base.path) : null;
   const baseKeys = baseData ? new Set(flattenKeys(baseData)) : null;
 
+  // Angielski i polski są wymagane i muszą być kompletne. Pozostałe języki mogą być częściowe –
+  // dla brakujących kluczy Foundry pokazuje tekst angielski, więc braki to tylko ostrzeżenia.
+  for (const code of REQUIRED_LANGUAGES) {
+    if (!languages.some((l) => l.lang === code)) errors.push(`module.json: brak wymaganego języka "${code}"`);
+  }
+
   for (const lang of languages) {
     if (lang === base) continue;
     const data = readJson(lang.path);
@@ -65,7 +75,10 @@ if (manifest) {
     const keys = new Set(flattenKeys(data));
     const missing = [...baseKeys].filter((k) => !keys.has(k));
     const extra = [...keys].filter((k) => !baseKeys.has(k));
-    if (missing.length) errors.push(`${lang.path}: brak ${missing.length} kluczy: ${missing.join(", ")}`);
+    if (missing.length) {
+      const message = `${lang.path}: brak ${missing.length} kluczy: ${missing.join(", ")}`;
+      (REQUIRED_LANGUAGES.includes(lang.lang) ? errors : warnings).push(message);
+    }
     if (extra.length) warnings.push(`${lang.path}: nadmiarowe klucze: ${extra.join(", ")}`);
   }
 }

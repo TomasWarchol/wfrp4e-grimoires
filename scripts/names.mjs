@@ -70,6 +70,25 @@ export const LANGUAGES = {
   guilder: ["Guilder", "Gildii"]
 };
 
+/**
+ * Dokłada warianty nazw z pliku tłumaczenia (sekcja Aliases), żeby moduł rozpoznawał talenty,
+ * języki i Tradycje w kolejnych językach bez zmian w kodzie. Wartości: teksty rozdzielone przecinkami.
+ * @param {{ReadWrite?: string, PettyMagic?: string, ArcaneMagic?: string, Language?: string,
+ *   Lores?: Object<string,string>, Languages?: Object<string,string>}} aliases
+ */
+export function addAliases(aliases = {}) {
+  const split = (value) => String(value ?? "").split(",").map((s) => s.trim()).filter(Boolean);
+  const merge = (target, value) => {
+    for (const name of split(value)) if (!target.some((v) => normalize(v) === normalize(name))) target.push(name);
+  };
+  merge(READ_WRITE, aliases.ReadWrite);
+  merge(PETTY_MAGIC, aliases.PettyMagic);
+  merge(ARCANE_MAGIC, aliases.ArcaneMagic);
+  merge(LANGUAGE, aliases.Language);
+  for (const [key, value] of Object.entries(aliases.Lores ?? {})) merge(LORE_NAMES[key] ??= [], value);
+  for (const [key, value] of Object.entries(aliases.Languages ?? {})) merge(LANGUAGES[key] ??= [], value);
+}
+
 /** Rozbija nazwę "Baza (Specjalizacja)" na części. */
 export function splitSpecialisation(name) {
   const match = String(name ?? "").match(/^(.*?)\s*\((.*)\)\s*$/);

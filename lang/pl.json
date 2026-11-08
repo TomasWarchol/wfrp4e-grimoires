@@ -108,6 +108,42 @@
       "RequireLanguageHint": "Postać musi znać Język, w którym spisano księgę (domyślnie Magiczny).",
       "RequireLoreName": "Wymagaj Tradycji zaklęcia",
       "RequireLoreHint": "Rzucać z księgi mogą tylko postacie z Magią Tajemną danej Tradycji (albo Magią Prostą dla magii prostej)."
+    },
+    "Aliases": {
+      "ReadWrite": "Czytanie/Pisanie",
+      "PettyMagic": "Magia Prosta",
+      "ArcaneMagic": "Magia Tajemna",
+      "Language": "Język",
+      "Lores": {
+        "beasts": "Zwierząt, Bestii",
+        "death": "Śmierci",
+        "fire": "Ognia",
+        "heavens": "Niebios",
+        "metal": "Metalu",
+        "life": "Życia",
+        "light": "Światła",
+        "shadow": "Cieni, Cienia",
+        "hedgecraft": "Guślarstwa",
+        "witchcraft": "Czarownictwa, Wiedźmiarstwa",
+        "daemonology": "Demonologii",
+        "necromancy": "Nekromancji",
+        "undivided": "Niepodzielonego Chaosu",
+        "nurgle": "Nurgle'a",
+        "slaanesh": "Slaanesha",
+        "tzeentch": "Tzeentcha"
+      },
+      "Languages": {
+        "magick": "Magiczny, Magii",
+        "reikspiel": "Reikspiel",
+        "classical": "Klasyczny",
+        "bretonnian": "Bretoński",
+        "tilean": "Tileański",
+        "eltharin": "Eltharin",
+        "khazalid": "Khazalid",
+        "wastelander": "Jałowej Krainy",
+        "battleTongue": "Bitewny",
+        "guilder": "Gildii"
+      }
     }
   }
 }

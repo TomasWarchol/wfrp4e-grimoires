@@ -9,6 +9,13 @@ import { registerCopyHooks, registerMemorizeQuery } from "./actors.mjs";
 import { createGrimoire, makeGrimoire, registerInventory } from "./inventory.mjs";
 import { GrimoireApp } from "./grimoire-app.mjs";
 import { isGrimoire, readGrimoire } from "./grimoire-data.mjs";
+import { addAliases } from "./names.mjs";
+
+// Warianty nazw talentów i języków z plików tłumaczeń: angielskiego (zapasowego) i aktywnego
+Hooks.once("i18nInit", () => {
+  addAliases(foundry.utils.getProperty(game.i18n._fallback ?? {}, "WFRP4E_GRIMOIRE.Aliases"));
+  addAliases(foundry.utils.getProperty(game.i18n.translations ?? {}, "WFRP4E_GRIMOIRE.Aliases"));
+});
 
 Hooks.once("init", () => {
   log.info("init");

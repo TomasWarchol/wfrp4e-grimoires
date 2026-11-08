@@ -9,7 +9,8 @@
     "validate": "node tools/validate-module.mjs",
     "check": "npm run validate && npm run lint && npm run test",
     "link": "node tools/link-foundry.mjs",
-    "package": "node tools/package-module.mjs"
+    "package": "node tools/package-module.mjs",
+    "lang:add": "node tools/add-language.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

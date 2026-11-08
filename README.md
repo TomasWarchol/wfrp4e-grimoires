@@ -53,6 +53,20 @@ api.open(item);      // open the grimoire window
 api.read(item);      // { language, cover, spells: [...] }
 ```
 
+## 🌐 Languages
+
+English and Polish are built in. To add another language:
+
+```bash
+npm run lang:add -- de "Deutsch"
+```
+
+This creates `lang/de.json` (a copy of the English texts) and registers it in `module.json`. Translate the texts; any key you leave out falls back to English, and `npm run check` lists the untranslated keys. Translations are welcome as pull requests.
+
+For a new language also fill in the `Aliases` section: the names of the Read/Write, Petty Magic and Arcane Magic talents, the Language skill, the Lores and the book languages as they appear in that language's compendia (comma-separated). The module then recognises characters' talents and skills in that language.
+
+A separate translation module can also add a language without touching this one: it declares a `languages` entry with `"lang": "de"` that points to its own file with the same keys.
+
 ## 🙏 Credits
 
 Inspired by the grimoires in *Forien's Armoury* by Forien. Written from scratch for Foundry v14 and WFRP4e 10.x.
