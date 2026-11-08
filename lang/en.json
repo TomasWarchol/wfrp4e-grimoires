@@ -115,7 +115,21 @@
       "ConsumeOnFailureName": "Failed scroll test uses up the scroll",
       "ConsumeOnFailureHint": "When off, a scroll is used up only after a successful casting test.",
       "RenameScrollsName": "Name scrolls after their spell",
-      "RenameScrollsHint": "Inscribing a spell renames the scroll, e.g. \"Scroll of Fireball\"."
+      "RenameScrollsHint": "Inscribing a spell renames the scroll, e.g. \"Scroll of Fireball\".",
+      "EnduranceEnabledName": "Casting fatigue (house rule)",
+      "EnduranceEnabledHint": "Characters have a pool of Magical Endurance spent by casting, channelling and scrolls. Below zero they test Endurance or gain a Fatigued Condition.",
+      "EnduranceFormulaName": "Maximum Magical Endurance",
+      "EnduranceFormulaHint": "How the maximum Magical Endurance of a character is calculated.",
+      "EnduranceUseBaseCNName": "Casting costs the spell's base CN",
+      "EnduranceUseBaseCNHint": "When off, casting costs the effective CN (e.g. doubled for spells cast from a grimoire).",
+      "EnduranceChannelCostName": "Magical Endurance per channelling test",
+      "EnduranceChannelCostHint": "Spent on every channelling test.",
+      "EnduranceScrollCostName": "Magical Endurance per scroll",
+      "EnduranceScrollCostHint": "Spent when casting from a scroll instead of the spell's CN. 0 = scrolls are free.",
+      "EnduranceStepName": "Difficulty step",
+      "EnduranceStepHint": "Below zero the Endurance test starts Challenging and gets one step harder for every this many points (up to Very Hard).",
+      "EnduranceAutoRegenName": "Regenerate with game time",
+      "EnduranceAutoRegenHint": "Characters regain their Willpower Bonus in Magical Endurance per hour of game time (needs the game clock to advance)."
     },
     "Aliases": {
       "ReadWrite": "Read/Write",
@@ -151,7 +165,8 @@
         "wastelander": "Wastelander",
         "battleTongue": "Battle Tongue",
         "guilder": "Guilder"
-      }
+      },
+      "Endurance": "Endurance"
     },
     "Scroll": {
       "NewScroll": "Empty Magic Scroll",
@@ -171,6 +186,17 @@
       "NoteNoActor": "Give the scroll to a character to cast from it.",
       "NoteConsume": "Reading the scroll casts the spell with its normal CN; the scroll is used up whether the test succeeds or not.",
       "NoteConsumeOnSuccess": "Reading the scroll casts the spell with its normal CN; the scroll is used up only if the test succeeds."
+    },
+    "Endurance": {
+      "Name": "Magical Endurance",
+      "Badge": "ME {value}/{max}",
+      "Spent": "{label}: −{amount} Magical Endurance (now {value}/{max}).",
+      "TestTitle": "Casting Fatigue",
+      "Formula": {
+        "tbPlus2Wpb": "Toughness Bonus + 2 × Willpower Bonus",
+        "tbPlusWpb": "Toughness Bonus + Willpower Bonus",
+        "tbTimesWpb": "Toughness Bonus × Willpower Bonus"
+      }
     }
   }
 }

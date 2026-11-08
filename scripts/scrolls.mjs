@@ -5,7 +5,7 @@
  * (system zapisuje wtedy dane zaklęcia w teście, więc karta czatu – obrażenia, przeciążenie – działa).
  * Zaklęcie ze zwoju liczy się jako zapamiętane: PM bazowy.
  */
-import { t, log } from "./constants.mjs";
+import { MODULE_ID, t, log } from "./constants.mjs";
 import { FLAG_SCOPE, spellEntry, spellLores } from "./grimoire-data.mjs";
 import { SCROLL_FLAG, emptyScroll, pickRandomSpell, readScroll, scrollCount, scrollName, shouldConsume } from "./scroll-data.mjs";
 import { actorView } from "./actors.mjs";
@@ -33,7 +33,8 @@ export async function castFromScroll(scroll) {
 
   let test;
   try {
-    test = await actor.setupCast(spell, { appendTitle: ` – ${t("Scroll.FromScroll")}` });
+    // Oznaczenie testu ze zwoju (koszt zmęczenia rzucaniem liczony jak dla zwoju)
+    test = await actor.setupCast(spell, { appendTitle: ` – ${t("Scroll.FromScroll")}`, [MODULE_ID]: { scroll: true } });
     if (test?.roll) await test.roll();
   } catch (err) {
     log.error("Rzut ze zwoju", err);

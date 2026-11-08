@@ -2,7 +2,7 @@
 
 [English](README.md) | **Polski**
 
-Księgi zaklęć dla **WFRP4e 10.x**: osobny dział w ekwipunku i okno otwartej księgi ze spisem zaklęć według Tradycji, pełnymi szczegółami czaru, rzucaniem z księgi i zapamiętywaniem zaklęć za zgodą MG.
+Księgi zaklęć dla **WFRP4e 10.x**: osobny dział w ekwipunku i okno otwartej księgi ze spisem zaklęć według Tradycji, pełnymi szczegółami czaru, rzucaniem z księgi i zapamiętywaniem zaklęć za zgodą MG. Do tego zwoje magiczne i opcjonalne zmęczenie rzucaniem.
 
 ## 📖 Jak to działa
 
@@ -29,12 +29,32 @@ Gdy księga jest przy postaci, każde zaklęcie, które postać może z niej rzu
 
 **Zapamiętaj** wysyła prośbę do MG. Po zgodzie MG systemowe okno *Memorize Spell* wylicza koszt PD według zasad (Ok / za darmo). Zaklęcie staje się własnym zaklęciem postaci: **M** jest zaznaczone, nie zależy już od księgi, a PD trafiają do dziennika doświadczenia. To samo dzieje się po zaznaczeniu **M** przy kopii z księgi bezpośrednio na karcie.
 
+## 📜 Zwoje magiczne
+
+* Zwój to też przedmiot z *Książek i dokumentów* oznaczony przez moduł: jedno zaklęcie i język, a ilość oznacza liczbę zwojów. Zwoje mają własny dział **Zwoje magiczne**; każdy dokument można zamienić w zwój przyciskiem **Uczyń zwojem magicznym**.
+* Okno zwoju pokazuje zaklęcie, plakietki warunków i liczbę pozostałych zwojów.
+* **Odczytaj i rzuć** uruchamia zwykły test rzucania systemu z bazowym PM zaklęcia, nawet gdy postać go nie zna, więc karty czatu (obrażenia, przeciążenie) działają jak zwykle. Potem zużywa się jeden zwój (opcjonalnie tylko po udanym teście). Ostatni rozsypuje się w pył.
+* Rzucić ze zwoju może każdy, kto umie go odczytać (Czytanie/Pisanie i jego język, jeśli wymagane); znajomość Tradycji nie jest potrzebna.
+* Makro MG na losowy zwój: `game.modules.get("wfrp4e-grimoires").api.scrolls.random({ lore: "fire", maxCN: 8, actor })` (bez `actor` zwój trafia do katalogu przedmiotów).
+
+## ⏳ Zmęczenie rzucaniem (opcjonalna zasada domowa)
+
+Domyślnie wyłączone. Po włączeniu każda postać ma pulę **Wytrzymałości Magicznej** (Bonus Wytrzymałości + 2 × Bonus Siły Woli albo inny wzór):
+
+* Rzucanie kosztuje PM zaklęcia (bazowy albo efektywny), a splatanie i zwoje stałą wartość. Przerzucony test nie kosztuje drugi raz.
+* Poniżej zera postać wykonuje test Odporności, zaczynający się jako Wymagający i trudniejący co krok; porażka daje stan Zmęczenie.
+* Wytrzymałość Magiczna wraca w tempie Bonusu Siły Woli na godzinę czasu gry; w API jest `endurance.rest(actor)` na pełny odpoczynek.
+* Pula jest widoczna jako plakietka w oknach księgi i zwoju; każdy koszt trafia szeptem do MG i gracza.
+
 ## ⚙️ Ustawienia (świat)
 
 * Księga musi być przy sobie
 * Wymagaj Czytania/Pisania
 * Wymagaj języka księgi
 * Wymagaj Tradycji zaklęcia (Magia Tajemna danej Tradycji albo Magia Prosta dla magii prostej)
+* Nieudany test zużywa zwój
+* Nazywaj zwoje od zaklęcia
+* Zmęczenie rzucaniem: włączenie, wzór maksimum, bazowy albo efektywny PM, koszt splatania i zwoju, krok trudności, regeneracja z czasem gry
 
 Talenty i umiejętności są rozpoznawane **po angielsku i po polsku** (np. *Arcane Magic (Life)* / *Magia Tajemna (Życia)*, *Language (Magick)* / *Język (Magiczny)*), niezależnie od języka interfejsu Foundry. Postać zna też Tradycję, jeśli zna już jakieś jej zaklęcie.
 

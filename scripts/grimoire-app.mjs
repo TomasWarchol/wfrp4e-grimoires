@@ -11,6 +11,7 @@ import { LANGUAGES, normalize } from "./names.mjs";
 import { evaluateReading, requirementBadges, spellStatus } from "./requirements.mjs";
 import { actorView, castFromBook, isCarried, requestMemorize, syncCopies } from "./actors.mjs";
 import { getSettings } from "./settings.mjs";
+import { enduranceEnabled, getEndurance } from "./endurance.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const TextEditorImpl = () => foundry.applications.ux.TextEditor.implementation;
@@ -172,6 +173,7 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
         label: b.key === "language" ? t("Badge.language", { language: languageLabel(grimoire.language) }) : t(`Badge.${b.key}`)
       })) : [],
       actorName: actor?.name,
+      endurance: actor && enduranceEnabled() ? getEndurance(actor) : null,
       carried,
       showCarried: Boolean(actor) && settings.requireCarried,
       groups,
