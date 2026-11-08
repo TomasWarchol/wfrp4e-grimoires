@@ -379,3 +379,131 @@
   font-size: 0.8em;
   opacity: 0.7;
 }
+
+/* Okno zwoju: rozwinięty pergamin między drewnianymi wałkami */
+.wfrp4e-grimoires.scroll-window {
+  --grimoire-paper: #f3e6c4;
+  --grimoire-paper-dark: #e6d3a3;
+  --grimoire-ink: #3b2814;
+  --grimoire-ink-soft: #6e5232;
+  --grimoire-accent: #8a2c12;
+  --grimoire-ok: #2f5d1e;
+  --grimoire-missing: #8a1f1f;
+}
+
+.wfrp4e-grimoires.scroll-window .window-content {
+  padding: 0;
+  overflow: hidden;
+  background: #2b1d12;
+}
+
+.wfrp4e-grimoires .scroll-parchment {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  margin: 0 14px;
+  background: linear-gradient(90deg, var(--grimoire-paper-dark), var(--grimoire-paper) 8%, var(--grimoire-paper) 92%, var(--grimoire-paper-dark));
+  color: var(--grimoire-ink);
+  font-family: var(--font-body, serif);
+}
+
+.wfrp4e-grimoires .scroll-rod {
+  flex: 0 0 14px;
+  margin: 0 -14px;
+  border-radius: 7px;
+  background: linear-gradient(180deg, #8a5a2b, #5a3816 60%, #3b2410);
+}
+
+.wfrp4e-grimoires .scroll-head,
+.wfrp4e-grimoires .scroll-editbar,
+.wfrp4e-grimoires .scroll-foot {
+  padding: 8px 18px 0;
+}
+
+.wfrp4e-grimoires .scroll-meta {
+  display: flex;
+  justify-content: space-between;
+  color: var(--grimoire-ink-soft);
+  font-size: 0.85rem;
+}
+
+.wfrp4e-grimoires .scroll-count {
+  font-family: var(--font-header, serif);
+  font-size: 1rem;
+  color: var(--grimoire-accent);
+}
+
+.wfrp4e-grimoires .scroll-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.wfrp4e-grimoires .scroll-badges .grimoire-badge {
+  border: 1px solid var(--grimoire-paper-dark);
+}
+
+.wfrp4e-grimoires .scroll-edit-toggle {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  margin-left: auto;
+  padding: 0;
+  color: var(--grimoire-ink);
+  background: transparent;
+  border: 1px solid var(--grimoire-paper-dark);
+}
+
+.wfrp4e-grimoires .scroll-edit-toggle.active {
+  background: rgba(138, 44, 18, 0.15);
+}
+
+.wfrp4e-grimoires .scroll-editbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  font-size: 0.8rem;
+}
+
+.wfrp4e-grimoires .scroll-editbar label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.wfrp4e-grimoires .scroll-editbar input[type="text"] {
+  width: 120px;
+}
+
+.wfrp4e-grimoires .scroll-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 18px;
+}
+
+.wfrp4e-grimoires .scroll-lore {
+  color: var(--grimoire-accent);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.wfrp4e-grimoires .scroll-name {
+  margin: 2px 0 10px;
+  border: none;
+  text-align: center;
+  color: var(--grimoire-ink);
+  font-family: var(--font-header, serif);
+  font-size: 1.6rem;
+}
+
+.wfrp4e-grimoires .scroll-foot {
+  padding-bottom: 10px;
+}
+
+.wfrp4e-grimoires .scroll-foot .grimoire-note {
+  margin-top: 0;
+}

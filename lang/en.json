@@ -12,11 +12,15 @@
       "Section": "Grimoires",
       "Carried": "Carried",
       "Open": "Open the grimoire",
-      "CopyTooltip": "From a grimoire – disappears when the grimoire leaves the character. Memorise it to keep it."
+      "CopyTooltip": "From a grimoire – disappears when the grimoire leaves the character. Memorise it to keep it.",
+      "ScrollSection": "Magic Scrolls",
+      "OpenScroll": "Open the scroll"
     },
     "Header": {
       "Open": "Open grimoire",
-      "Make": "Make into grimoire"
+      "Make": "Make into grimoire",
+      "OpenScroll": "Open scroll",
+      "MakeScroll": "Make into magic scroll"
     },
     "Badge": {
       "readWrite": "Read/Write",
@@ -107,7 +111,11 @@
       "RequireLanguageName": "Require the grimoire's language",
       "RequireLanguageHint": "Characters must know the Language the grimoire is written in (Magick by default).",
       "RequireLoreName": "Require the spell's Lore",
-      "RequireLoreHint": "Only characters with Arcane Magic in the spell's Lore (or Petty Magic for petty spells) can cast it from a grimoire."
+      "RequireLoreHint": "Only characters with Arcane Magic in the spell's Lore (or Petty Magic for petty spells) can cast it from a grimoire.",
+      "ConsumeOnFailureName": "Failed scroll test uses up the scroll",
+      "ConsumeOnFailureHint": "When off, a scroll is used up only after a successful casting test.",
+      "RenameScrollsName": "Name scrolls after their spell",
+      "RenameScrollsHint": "Inscribing a spell renames the scroll, e.g. \"Scroll of Fireball\"."
     },
     "Aliases": {
       "ReadWrite": "Read/Write",
@@ -144,6 +152,25 @@
         "battleTongue": "Battle Tongue",
         "guilder": "Guilder"
       }
+    },
+    "Scroll": {
+      "NewScroll": "Empty Magic Scroll",
+      "NamePattern": "Scroll of {spell}",
+      "FromScroll": "Scroll",
+      "Cast": "Read and cast",
+      "CannotRead": "You can't read this scroll.",
+      "NoneLeft": "There are no scrolls left.",
+      "Failed": "Casting from the scroll failed. See the console (F12) for details.",
+      "Consumed": "{scroll} crumbles to dust – it was the last one.",
+      "NoSpellFound": "No spell matches the random scroll criteria.",
+      "CountTooltip": "Number of scrolls",
+      "Edit": "Edit the scroll",
+      "DropHint": "Drop a spell on the scroll to inscribe it",
+      "Empty": "This scroll is blank.",
+      "EmptyEditable": "This scroll is blank. Drag a spell here from a compendium, the Items directory or a character sheet.",
+      "NoteNoActor": "Give the scroll to a character to cast from it.",
+      "NoteConsume": "Reading the scroll casts the spell with its normal CN; the scroll is used up whether the test succeeds or not.",
+      "NoteConsumeOnSuccess": "Reading the scroll casts the spell with its normal CN; the scroll is used up only if the test succeeds."
     }
   }
 }

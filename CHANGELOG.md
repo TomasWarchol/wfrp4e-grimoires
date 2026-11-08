@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 (in progress)
+- **Magic scrolls**: a *Books and Documents* trapping marked by the module, holding one spell and a language; quantity = number of scrolls. Own **Magic Scrolls** inventory section, *Make into magic scroll* in the item sheet header.
+- Scroll window (unrolled parchment): spell details, requirement badges, scroll count, **Read and cast** (a normal system casting test with base CN for a spell the character doesn't know; chat cards work as usual) and **To chat**. Edit mode: drop a spell, language.
+- A scroll is used up after the test (setting: only after a successful test). The last scroll crumbles.
+- Random scroll API: `api.scrolls.random({ lore, maxCN, actor })`.
+
 ## 0.1.0
 - First version: spellbooks for WFRP4e 10.x.
 - A grimoire is a *Books and Documents* trapping marked by the module, with its own **Grimoires** inventory section, a Carried toggle, an open icon and a **+** that creates a new grimoire. *Make into grimoire* in the item sheet header.

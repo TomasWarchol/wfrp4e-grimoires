@@ -10,8 +10,12 @@ import { FLAG_SCOPE, GRIMOIRE_FLAG, emptyGrimoire, isGrimoire } from "./grimoire
 import { isCopy } from "./actors.mjs";
 import { getSettings } from "./settings.mjs";
 import { GrimoireApp } from "./grimoire-app.mjs";
+import { ScrollApp } from "./scroll-app.mjs";
+import { isScroll } from "./scroll-data.mjs";
+import { createScroll, makeScroll } from "./scrolls.mjs";
 
 const SECTION = "grimoires";
+const SCROLL_SECTION = "scrolls";
 
 /** Tworzy nową księgę zaklęć na aktorze i otwiera ją. */
 export async function createGrimoire(actor) {
@@ -40,7 +44,8 @@ export function registerInventory() {
   Hooks.on("wfrp4e:constructInventory", (_sheet, categories, collapsed) => {
     const books = categories.booksAndDocuments?.items ?? [];
     const grimoires = books.filter(isGrimoire);
-    if (categories.booksAndDocuments) categories.booksAndDocuments.items = books.filter((i) => !isGrimoire(i));
+    const scrolls = books.filter(isScroll);
+    if (categories.booksAndDocuments) categories.booksAndDocuments.items = books.filter((i) => !isGrimoire(i) && !isScroll(i));
     const requireCarried = getSettings().requireCarried;
     categories[SECTION] = {
       label: t("Inventory.Section"),
@@ -49,6 +54,13 @@ export function registerInventory() {
       toggleName: t("Inventory.Carried"),
       show: false,
       collapsed: collapsed?.[SECTION],
+      dataType: "trapping"
+    };
+    categories[SCROLL_SECTION] = {
+      label: t("Inventory.ScrollSection"),
+      items: scrolls,
+      show: false,
+      collapsed: collapsed?.[SCROLL_SECTION],
       dataType: "trapping"
     };
   });
@@ -60,14 +72,23 @@ export function registerInventory() {
   Hooks.on("getHeaderControlsDocumentSheetV2", (app, controls) => {
     const item = app.document;
     if (!(item instanceof Item) || item.type !== "trapping" || !item.isOwner) return;
-    const grimoire = isGrimoire(item);
-    const action = `${MODULE_ID}-grimoire`;
-    app.options.actions[action] ??= () => (isGrimoire(item) ? GrimoireApp.open(item) : makeGrimoire(item));
-    controls.unshift({
-      action,
-      icon: "fa-solid fa-book-journal-whills",
-      label: grimoire ? t("Header.Open") : t("Header.Make")
-    });
+    const grimoireAction = `${MODULE_ID}-grimoire`;
+    const scrollAction = `${MODULE_ID}-scroll`;
+    app.options.actions[grimoireAction] ??= () => (isGrimoire(item) ? GrimoireApp.open(item) : makeGrimoire(item));
+    app.options.actions[scrollAction] ??= async () => {
+      if (!isScroll(item)) await makeScroll(item);
+      ScrollApp.open(item);
+    };
+    if (isScroll(item)) {
+      controls.unshift({ action: scrollAction, icon: "fa-solid fa-scroll", label: t("Header.OpenScroll") });
+    } else if (isGrimoire(item)) {
+      controls.unshift({ action: grimoireAction, icon: "fa-solid fa-book-journal-whills", label: t("Header.Open") });
+    } else {
+      controls.unshift(
+        { action: scrollAction, icon: "fa-solid fa-scroll", label: t("Header.MakeScroll") },
+        { action: grimoireAction, icon: "fa-solid fa-book-journal-whills", label: t("Header.Make") }
+      );
+    }
   });
 }
 
@@ -75,41 +96,11 @@ function decorateActorSheet(app, element) {
   const actor = app.document;
   if (!actor || !element) return;
 
-  for (const row of element.querySelectorAll(`.sheet-list.inventory.${SECTION} .list-row[data-uuid]`)) {
-    if (row.querySelector(`.${MODULE_ID}-open`)) continue;
-    const controls = row.querySelector(".list-controls");
-    const button = document.createElement("a");
-    button.className = `list-control ${MODULE_ID}-open`;
-    button.dataset.tooltip = t("Inventory.Open");
-    button.innerHTML = `<i class="fa-solid fa-book-open"></i>`;
-    button.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      ev.stopPropagation();
-      const item = fromUuidSync(row.dataset.uuid);
-      if (item) GrimoireApp.open(item);
-    });
-    (controls ?? row.querySelector(".row-content"))?.prepend(button);
-
-    // Kliknięcie obrazka otwiera księgę zamiast domyślnej akcji przedmiotu
-    const img = row.querySelector("img[data-action='useItem']");
-    if (img) {
-      img.removeAttribute("data-action");
-      img.addEventListener("click", () => {
-        const item = fromUuidSync(row.dataset.uuid);
-        if (item) GrimoireApp.open(item);
-      });
-    }
-  }
-
-  // "+" w dziale ksiąg tworzy od razu księgę zaklęć
-  const add = element.querySelector(`.sheet-list.inventory.${SECTION} [data-action='createItem']`);
-  if (add) {
-    add.removeAttribute("data-action");
-    add.addEventListener("click", (ev) => {
-      ev.preventDefault();
-      createGrimoire(actor);
-    });
-  }
+  decorateSection(element, SECTION, "fa-book-open", t("Inventory.Open"), (item) => GrimoireApp.open(item), () => createGrimoire(actor));
+  decorateSection(element, SCROLL_SECTION, "fa-scroll", t("Inventory.OpenScroll"), (item) => ScrollApp.open(item), async () => {
+    const scroll = await createScroll(actor);
+    if (scroll) ScrollApp.open(scroll);
+  });
 
   // Znacznik kopii zaklęć z księgi
   for (const row of element.querySelectorAll(".list-row[data-uuid]")) {
@@ -121,5 +112,42 @@ function decorateActorSheet(app, element) {
     icon.className = `fa-solid fa-book-journal-whills ${MODULE_ID}-copy`;
     icon.dataset.tooltip = t("Inventory.CopyTooltip");
     label?.append(" ", icon);
+  }
+}
+
+/** Ikona otwarcia w wierszach działu, obrazek otwiera okno, "+" tworzy nowy przedmiot. */
+function decorateSection(element, section, icon, tooltip, open, create) {
+  for (const row of element.querySelectorAll(`.sheet-list.inventory.${section} .list-row[data-uuid]`)) {
+    if (row.querySelector(`.${MODULE_ID}-open`)) continue;
+    const controls = row.querySelector(".list-controls");
+    const button = document.createElement("a");
+    button.className = `list-control ${MODULE_ID}-open`;
+    button.dataset.tooltip = tooltip;
+    button.innerHTML = `<i class="fa-solid ${icon}"></i>`;
+    button.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      const item = fromUuidSync(row.dataset.uuid);
+      if (item) open(item);
+    });
+    (controls ?? row.querySelector(".row-content"))?.prepend(button);
+
+    const img = row.querySelector("img[data-action='useItem']");
+    if (img) {
+      img.removeAttribute("data-action");
+      img.addEventListener("click", () => {
+        const item = fromUuidSync(row.dataset.uuid);
+        if (item) open(item);
+      });
+    }
+  }
+
+  const add = element.querySelector(`.sheet-list.inventory.${section} [data-action='createItem']`);
+  if (add) {
+    add.removeAttribute("data-action");
+    add.addEventListener("click", (ev) => {
+      ev.preventDefault();
+      create();
+    });
   }
 }

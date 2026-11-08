@@ -8,6 +8,9 @@ import { registerSettings } from "./settings.mjs";
 import { registerCopyHooks, registerMemorizeQuery } from "./actors.mjs";
 import { createGrimoire, makeGrimoire, registerInventory } from "./inventory.mjs";
 import { GrimoireApp } from "./grimoire-app.mjs";
+import { ScrollApp } from "./scroll-app.mjs";
+import { isScroll, readScroll } from "./scroll-data.mjs";
+import { castFromScroll, createScroll, randomScroll } from "./scrolls.mjs";
 import { isGrimoire, readGrimoire } from "./grimoire-data.mjs";
 import { addAliases } from "./names.mjs";
 
@@ -25,7 +28,8 @@ Hooks.once("init", () => {
   registerCopyHooks();
   foundry.applications.handlebars.loadTemplates([
     `modules/${MODULE_ID}/templates/grimoire.hbs`,
-    `modules/${MODULE_ID}/templates/chat-spell.hbs`
+    `modules/${MODULE_ID}/templates/chat-spell.hbs`,
+    `modules/${MODULE_ID}/templates/scroll.hbs`
   ]);
 
   game.modules.get(MODULE_ID).api = {
@@ -36,17 +40,42 @@ Hooks.once("init", () => {
     /** Zamienia książkę w księgę zaklęć. */
     make: (item) => makeGrimoire(item),
     isGrimoire,
-    read: readGrimoire
+    read: readGrimoire,
+    scrolls: {
+      /** Otwiera okno zwoju. */
+      open: (scroll) => ScrollApp.open(scroll),
+      /** Tworzy pusty zwój na aktorze. */
+      create: (actor) => createScroll(actor),
+      /** Odczytuje zwój i rzuca zaklęcie (zużywa zwój). */
+      cast: (scroll) => castFromScroll(scroll),
+      /** Losowy zwój: { lore, maxCN, actor } – bez aktora trafia do katalogu przedmiotów. */
+      random: (options) => randomScroll(options),
+      isScroll,
+      read: readScroll
+    }
   };
 });
 
 // Odświeżanie otwartych okien po zmianach księgi lub postaci
 Hooks.on("updateItem", (item) => {
   if (isGrimoire(item)) GrimoireApp.refresh(item);
-  else if (item.actor) GrimoireApp.refreshForActor(item.actor);
+  else if (isScroll(item)) ScrollApp.refresh(item);
+  else if (item.actor) {
+    GrimoireApp.refreshForActor(item.actor);
+    ScrollApp.refreshForActor(item.actor);
+  }
 });
-Hooks.on("createItem", (item) => item.actor && GrimoireApp.refreshForActor(item.actor));
-Hooks.on("deleteItem", (item) => item.actor && GrimoireApp.refreshForActor(item.actor));
+Hooks.on("createItem", (item) => {
+  if (!item.actor) return;
+  GrimoireApp.refreshForActor(item.actor);
+  ScrollApp.refreshForActor(item.actor);
+});
+Hooks.on("deleteItem", (item) => {
+  if (isScroll(item)) ScrollApp.closeFor(item);
+  if (!item.actor) return;
+  GrimoireApp.refreshForActor(item.actor);
+  ScrollApp.refreshForActor(item.actor);
+});
 Hooks.on(`${MODULE_ID}.settingsChanged`, () => {
-  for (const app of foundry.applications.instances.values()) if (app instanceof GrimoireApp) app.render();
+  for (const app of foundry.applications.instances.values()) if (app instanceof GrimoireApp || app instanceof ScrollApp) app.render();
 });

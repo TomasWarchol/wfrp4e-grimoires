@@ -12,11 +12,15 @@
       "Section": "Księgi zaklęć",
       "Carried": "Przy sobie",
       "Open": "Otwórz księgę",
-      "CopyTooltip": "Z księgi – zniknie, gdy księga opuści postać. Zapamiętaj, by zachować."
+      "CopyTooltip": "Z księgi – zniknie, gdy księga opuści postać. Zapamiętaj, by zachować.",
+      "ScrollSection": "Zwoje magiczne",
+      "OpenScroll": "Otwórz zwój"
     },
     "Header": {
       "Open": "Otwórz księgę",
-      "Make": "Uczyń księgą zaklęć"
+      "Make": "Uczyń księgą zaklęć",
+      "OpenScroll": "Otwórz zwój",
+      "MakeScroll": "Uczyń zwojem magicznym"
     },
     "Badge": {
       "readWrite": "Czytanie/Pisanie",
@@ -107,7 +111,11 @@
       "RequireLanguageName": "Wymagaj języka księgi",
       "RequireLanguageHint": "Postać musi znać Język, w którym spisano księgę (domyślnie Magiczny).",
       "RequireLoreName": "Wymagaj Tradycji zaklęcia",
-      "RequireLoreHint": "Rzucać z księgi mogą tylko postacie z Magią Tajemną danej Tradycji (albo Magią Prostą dla magii prostej)."
+      "RequireLoreHint": "Rzucać z księgi mogą tylko postacie z Magią Tajemną danej Tradycji (albo Magią Prostą dla magii prostej).",
+      "ConsumeOnFailureName": "Nieudany test zużywa zwój",
+      "ConsumeOnFailureHint": "Gdy wyłączone, zwój zużywa się tylko po udanym teście rzucania.",
+      "RenameScrollsName": "Nazywaj zwoje od zaklęcia",
+      "RenameScrollsHint": "Zapisanie zaklęcia zmienia nazwę zwoju, np. „Zwój: Kula ognia”."
     },
     "Aliases": {
       "ReadWrite": "Czytanie/Pisanie",
@@ -144,6 +152,25 @@
         "battleTongue": "Bitewny",
         "guilder": "Gildii"
       }
+    },
+    "Scroll": {
+      "NewScroll": "Pusty zwój magiczny",
+      "NamePattern": "Zwój: {spell}",
+      "FromScroll": "Zwój",
+      "Cast": "Odczytaj i rzuć",
+      "CannotRead": "Nie potrafisz odczytać tego zwoju.",
+      "NoneLeft": "Nie zostały już żadne zwoje.",
+      "Failed": "Rzut ze zwoju nie powiódł się. Szczegóły w konsoli (F12).",
+      "Consumed": "{scroll} rozsypuje się w pył – to był ostatni.",
+      "NoSpellFound": "Żadne zaklęcie nie spełnia warunków losowego zwoju.",
+      "CountTooltip": "Liczba zwojów",
+      "Edit": "Edytuj zwój",
+      "DropHint": "Upuść zaklęcie na zwój, aby je zapisać",
+      "Empty": "Ten zwój jest pusty.",
+      "EmptyEditable": "Ten zwój jest pusty. Przeciągnij tu zaklęcie z kompendium, katalogu przedmiotów albo karty postaci.",
+      "NoteNoActor": "Daj zwój postaci, aby z niego rzucić.",
+      "NoteConsume": "Odczytanie zwoju rzuca zaklęcie ze zwykłym PM; zwój zużywa się niezależnie od wyniku testu.",
+      "NoteConsumeOnSuccess": "Odczytanie zwoju rzuca zaklęcie ze zwykłym PM; zwój zużywa się tylko po udanym teście."
     }
   }
 }

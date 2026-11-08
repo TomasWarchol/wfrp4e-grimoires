@@ -7,7 +7,9 @@ const SETTINGS = {
   requireCarried: { type: Boolean, default: true },
   requireReadWrite: { type: Boolean, default: true },
   requireLanguage: { type: Boolean, default: true },
-  requireLore: { type: Boolean, default: true }
+  requireLore: { type: Boolean, default: true },
+  consumeOnFailure: { type: Boolean, default: true },
+  renameScrolls: { type: Boolean, default: true }
 };
 
 export function registerSettings() {

@@ -1,0 +1,75 @@
+<div class="scroll-parchment">
+  <div class="scroll-rod top"></div>
+
+  <header class="scroll-head">
+    <div class="scroll-meta">
+      <span><i class="fa-solid fa-scroll"></i> {{localize "WFRP4E_GRIMOIRE.WrittenIn" language=languageLabel}}</span>
+      <span class="scroll-count" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Scroll.CountTooltip'}}">× {{count}}</span>
+    </div>
+    <div class="scroll-badges">
+      {{#each badges}}
+        <span class="grimoire-badge {{#if ok}}ok{{else}}missing{{/if}}">
+          <i class="fa-solid {{#if ok}}fa-check{{else}}fa-xmark{{/if}}"></i> {{label}}
+        </span>
+      {{/each}}
+      {{#if canEdit}}
+        <button type="button" class="scroll-edit-toggle {{#if editMode}}active{{/if}}" data-action="toggleEdit" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Scroll.Edit'}}">
+          <i class="fa-solid fa-feather-pointed"></i>
+        </button>
+      {{/if}}
+    </div>
+  </header>
+
+  {{#if editMode}}
+    <section class="scroll-editbar">
+      <label>{{localize "WFRP4E_GRIMOIRE.Edit.Language"}}
+        <select name="language">
+          {{#each languages}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+          {{#if customLanguage}}<option value="{{customLanguage}}" selected>{{customLanguage}}</option>{{/if}}
+        </select>
+      </label>
+      <label>{{localize "WFRP4E_GRIMOIRE.Edit.CustomLanguage"}}
+        <input type="text" name="customLanguage" value="{{customLanguage}}" placeholder="Eltharin">
+      </label>
+      <span class="grimoire-drop-hint"><i class="fa-solid fa-hand-pointer"></i> {{localize "WFRP4E_GRIMOIRE.Scroll.DropHint"}}</span>
+    </section>
+  {{/if}}
+
+  <div class="scroll-body">
+    {{#if spell}}
+      <div class="scroll-lore">{{spell.lore}}</div>
+      <h2 class="scroll-name">{{spell.name}}</h2>
+      {{#if hidden}}
+        <p class="grimoire-illegible-note"><i class="fa-solid fa-eye-slash"></i> {{localize "WFRP4E_GRIMOIRE.Illegible"}}</p>
+      {{else}}
+        <div class="grimoire-stats">
+          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.CN"}}</span><b>{{spell.cn}}</b></div>
+          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Range"}}</span><b>{{spell.range}}</b></div>
+          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Target"}}</span><b>{{spell.target}}</b></div>
+          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Duration"}}</span><b>{{spell.duration}}</b></div>
+        </div>
+        <div class="grimoire-description">{{{spell.description}}}</div>
+      {{/if}}
+    {{else}}
+      <p class="grimoire-empty">
+        {{#if canEdit}}{{localize "WFRP4E_GRIMOIRE.Scroll.EmptyEditable"}}{{else}}{{localize "WFRP4E_GRIMOIRE.Scroll.Empty"}}{{/if}}
+      </p>
+    {{/if}}
+  </div>
+
+  {{#if spell}}
+    <footer class="scroll-foot">
+      {{#if note}}<p class="grimoire-note">{{note}}</p>{{/if}}
+      <div class="grimoire-actions">
+        {{#if canCast}}
+          <button type="button" class="primary" data-action="cast"><i class="fa-solid fa-wand-sparkles"></i> {{localize "WFRP4E_GRIMOIRE.Scroll.Cast"}}</button>
+        {{/if}}
+        {{#unless hidden}}
+          <button type="button" data-action="chat"><i class="fa-solid fa-comment"></i> {{localize "WFRP4E_GRIMOIRE.Action.Chat"}}</button>
+        {{/unless}}
+      </div>
+    </footer>
+  {{/if}}
+
+  <div class="scroll-rod bottom"></div>
+</div>
