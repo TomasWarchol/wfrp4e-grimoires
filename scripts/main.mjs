@@ -1,18 +1,22 @@
 /**
  * WFRP4e – Grimoires
- * Księgi zaklęć: osobny dział w ekwipunku i okno księgi ze spisem zaklęć.
+ * Księgi i zwoje: osobne działy w ekwipunku, okno księgi ze spisem treści i typy wpisów.
  */
 
 import { MODULE_ID, log } from "./constants.mjs";
-import { registerSettings } from "./settings.mjs";
+import { applyRequirementDefaults, registerSettings } from "./settings.mjs";
 import { registerCopyHooks, registerMemorizeQuery } from "./actors.mjs";
 import { createGrimoire, makeGrimoire, registerInventory } from "./inventory.mjs";
 import { GrimoireApp } from "./grimoire-app.mjs";
 import { ScrollApp } from "./scroll-app.mjs";
-import { isScroll, readScroll } from "./scroll-data.mjs";
-import { castFromScroll, createScroll, randomScroll } from "./scrolls.mjs";
-import { isGrimoire, readGrimoire } from "./grimoire-data.mjs";
+import { readScroll } from "./scroll-data.mjs";
+import { castFromScroll, createScroll, inscribeEntry } from "./scrolls.mjs";
+import { isBook, isGrimoire, isScroll, readBook } from "./grimoire-data.mjs";
+import { getEntryType, registerEntryType } from "./entry-types.mjs";
+import { spellType } from "./spell-type.mjs";
 import { addAliases } from "./names.mjs";
+
+registerEntryType(spellType);
 
 // Warianty nazw talentów i języków z plików tłumaczeń: angielskiego (zapasowego) i aktywnego
 Hooks.once("i18nInit", () => {
@@ -37,10 +41,15 @@ Hooks.once("init", () => {
     open: (book) => GrimoireApp.open(book),
     /** Tworzy nową księgę na aktorze. */
     create: (actor) => createGrimoire(actor),
-    /** Zamienia książkę w księgę zaklęć. */
+    /** Zamienia książkę w księgę. */
     make: (item) => makeGrimoire(item),
+    isBook,
     isGrimoire,
-    read: readGrimoire,
+    /** { form, language, cover, requirements, entries: [{ id, type, sourceUuid, data }] } */
+    read: readBook,
+    /** Dokłada nowy typ wpisów ksiąg (patrz scripts/entry-types.mjs). */
+    registerEntryType,
+    getEntryType,
     scrolls: {
       /** Otwiera okno zwoju. */
       open: (scroll) => ScrollApp.open(scroll),
@@ -48,13 +57,15 @@ Hooks.once("init", () => {
       create: (actor) => createScroll(actor),
       /** Odczytuje zwój i rzuca zaklęcie (zużywa zwój). */
       cast: (scroll) => castFromScroll(scroll),
-      /** Losowy zwój: { lore, maxCN, actor } – bez aktora trafia do katalogu przedmiotów. */
-      random: (options) => randomScroll(options),
+      /** Zapisuje wpis na zwoju. */
+      inscribe: (scroll, entry, options) => inscribeEntry(scroll, entry, options),
       isScroll,
       read: readScroll
     }
   };
 });
+
+Hooks.once("setup", applyRequirementDefaults);
 
 // Odświeżanie otwartych okien po zmianach księgi lub postaci
 Hooks.on("updateItem", (item) => {

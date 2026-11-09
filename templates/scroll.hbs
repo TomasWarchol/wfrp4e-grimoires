@@ -36,19 +36,16 @@
   {{/if}}
 
   <div class="scroll-body">
-    {{#if spell}}
-      <div class="scroll-lore">{{spell.lore}}</div>
-      <h2 class="scroll-name">{{spell.name}}</h2>
+    {{#if details}}
+      <div class="scroll-lore">{{details.subtitle}}</div>
+      <h2 class="scroll-name">{{details.name}}</h2>
       {{#if hidden}}
         <p class="grimoire-illegible-note"><i class="fa-solid fa-eye-slash"></i> {{localize "WFRP4E_GRIMOIRE.Illegible"}}</p>
       {{else}}
         <div class="grimoire-stats">
-          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.CN"}}</span><b>{{spell.cn}}</b></div>
-          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Range"}}</span><b>{{spell.range}}</b></div>
-          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Target"}}</span><b>{{spell.target}}</b></div>
-          <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Duration"}}</span><b>{{spell.duration}}</b></div>
+          {{#each details.stats}}<div><span>{{label}}</span><b>{{value}}</b>{{#if hint}}<small>{{hint}}</small>{{/if}}</div>{{/each}}
         </div>
-        <div class="grimoire-description">{{{spell.description}}}</div>
+        <div class="grimoire-description">{{{details.description}}}</div>
       {{/if}}
     {{else}}
       <p class="grimoire-empty">
@@ -57,16 +54,13 @@
     {{/if}}
   </div>
 
-  {{#if spell}}
+  {{#if details}}
     <footer class="scroll-foot">
-      {{#if note}}<p class="grimoire-note">{{note}}</p>{{/if}}
+      {{#if details.note}}<p class="grimoire-note">{{details.note}}</p>{{/if}}
       <div class="grimoire-actions">
-        {{#if canCast}}
-          <button type="button" class="primary" data-action="cast"><i class="fa-solid fa-wand-sparkles"></i> {{localize "WFRP4E_GRIMOIRE.Scroll.Cast"}}</button>
-        {{/if}}
-        {{#unless hidden}}
-          <button type="button" data-action="chat"><i class="fa-solid fa-comment"></i> {{localize "WFRP4E_GRIMOIRE.Action.Chat"}}</button>
-        {{/unless}}
+        {{#each details.actions}}
+          <button type="button" {{#if primary}}class="primary"{{/if}} data-action="entryAction" data-entry-action="{{id}}"><i class="fa-solid {{icon}}"></i> {{label}}</button>
+        {{/each}}
       </div>
     </footer>
   {{/if}}

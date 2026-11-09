@@ -114,6 +114,14 @@ export function languageVariants(language) {
   return LANGUAGES[language] ?? [language];
 }
 
+/** Klucz języka dla nazwy wpisanej ręcznie (np. "Khazalid", "Język (Klasyczny)"); nieznana zostaje tekstem. */
+export function languageKey(text) {
+  const { base, spec } = splitSpecialisation(text);
+  const name = spec && matchesAny(base, LANGUAGE) ? spec : String(text ?? "").trim();
+  const key = Object.keys(LANGUAGES).find((k) => matchesAny(name, LANGUAGES[k]));
+  return key ?? name;
+}
+
 /** Warianty nazwy Tradycji (znany klucz, etykieta systemu, sam klucz). */
 export function loreVariants(lore, systemLabel) {
   return [...(LORE_NAMES[lore] ?? []), systemLabel, lore].filter(Boolean);

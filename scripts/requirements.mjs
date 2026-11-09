@@ -4,8 +4,7 @@
  * Wejście to uproszczony widok aktora:
  *   { talents: string[], skills: string[], spells: [{ name, lores: string[], memorized?: boolean }] }
  * (`spells` – zaklęcia własne postaci, bez kopii z ksiąg).
- * i ustawienia:
- *   { requireReadWrite, requireLanguage, requireLore }
+ * Warunki należą do księgi: `requirements: { readWrite, language, lore, carried }`.
  */
 import {
   ARCANE_MAGIC, LANGUAGE, PETTY_MAGIC, READ_WRITE,
@@ -22,14 +21,25 @@ export function knowsLore(view, lore, systemLabel) {
 
 /**
  * Ocena księgi dla postaci.
- * @returns {{ canRead: boolean, readWrite: boolean, language: boolean, readable: boolean }}
+ * @returns {{ readWrite: boolean, language: boolean, readable: boolean }}
  */
-export function evaluateReading(view, grimoire, settings = {}) {
-  const { requireReadWrite = true, requireLanguage = true } = settings;
+export function evaluateReading(view, book) {
+  const { readWrite: needsReadWrite = true, language: needsLanguage = true } = book.requirements ?? {};
   const readWrite = view.talents.some((t) => matchesAny(t, READ_WRITE));
-  const language = hasSpecialised(view.skills, LANGUAGE, languageVariants(grimoire.language));
-  const readable = (!requireReadWrite || readWrite) && (!requireLanguage || language);
+  const language = hasSpecialised(view.skills, LANGUAGE, languageVariants(book.language));
+  const readable = (!needsReadWrite || readWrite) && (!needsLanguage || language);
   return { readWrite, language, readable };
+}
+
+/**
+ * Powód braku dostępu do księgi albo `null`.
+ * @returns {"carried"|"readWrite"|"language"|null}
+ */
+export function accessReason(reading, requirements = {}, { carried = true } = {}) {
+  if (!carried) return "carried";
+  if (requirements.readWrite !== false && !reading.readWrite) return "readWrite";
+  if (requirements.language !== false && !reading.language) return "language";
+  return null;
 }
 
 /**
@@ -42,22 +52,22 @@ export function evaluateReading(view, grimoire, settings = {}) {
  *   readOnly – może czytać, ale nie zna Tradycji,
  *   unreadable – nie może przeczytać księgi.
  */
-export function spellStatus(view, summary, reading, settings = {}, loreLabel = (l) => l) {
-  const { requireLore = true } = settings;
+export function spellStatus(view, summary, reading, requirements = {}, loreLabel = (l) => l) {
+  const { lore: needsLore = true } = requirements;
   const owned = view.spells.find((s) => normalize(s.name) === normalize(summary.name));
   if (owned) return owned.memorized !== false || owned.lores.includes("petty") ? "known" : "unmemorized";
   if (!reading.readable) return "unreadable";
   const lore = summary.lores[0];
-  if (requireLore && !knowsLore(view, lore, loreLabel(lore))) return "readOnly";
+  if (needsLore && !knowsLore(view, lore, loreLabel(lore))) return "readOnly";
   // Magii prostej nie rzuca się z księgi (zawsze jest "zapamiętana") – można się jej tylko nauczyć
   if (summary.isPetty) return "learnable";
   return "castable";
 }
 
 /** Plakietki warunków do nagłówka okna. */
-export function requirementBadges(reading, settings = {}) {
+export function requirementBadges(reading, requirements = {}) {
   const badges = [];
-  if (settings.requireReadWrite !== false) badges.push({ key: "readWrite", ok: reading.readWrite });
-  if (settings.requireLanguage !== false) badges.push({ key: "language", ok: reading.language });
+  if (requirements.readWrite !== false) badges.push({ key: "readWrite", ok: reading.readWrite });
+  if (requirements.language !== false) badges.push({ key: "language", ok: reading.language });
   return badges;
 }

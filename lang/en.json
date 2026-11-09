@@ -1,26 +1,26 @@
 {
   "WFRP4E_GRIMOIRE": {
-    "Title": "Grimoires",
-    "NewGrimoire": "New Grimoire",
-    "WrittenIn": "Written in {language}",
-    "Search": "Search spells",
-    "Empty": "This grimoire holds no spells.",
-    "EmptyEditable": "This grimoire holds no spells yet. Drag spells here from a compendium, the Items directory or a character sheet.",
+    "Title": "Tomes",
+    "NewGrimoire": "New Tome",
+    "WrittenIn": "Script: {language}",
+    "Search": "Search the pages",
+    "Empty": "These pages are blank.",
+    "EmptyEditable": "These pages are blank. Drag spells here from a compendium, the Items directory or a character sheet.",
     "Illegible": "The writing means nothing to you.",
     "CNShort": "CN",
     "Inventory": {
-      "Section": "Grimoires",
+      "Section": "Tomes",
       "Carried": "Carried",
-      "Open": "Open the grimoire",
+      "Open": "Open the tome",
       "CopyTooltip": "From a grimoire – disappears when the grimoire leaves the character. Memorise it to keep it.",
-      "ScrollSection": "Magic Scrolls",
+      "ScrollSection": "Scrolls",
       "OpenScroll": "Open the scroll"
     },
     "Header": {
-      "Open": "Open grimoire",
-      "Make": "Make into grimoire",
+      "Open": "Open tome",
+      "Make": "Make into tome",
       "OpenScroll": "Open scroll",
-      "MakeScroll": "Make into magic scroll"
+      "MakeScroll": "Make into scroll"
     },
     "Badge": {
       "readWrite": "Read/Write",
@@ -62,22 +62,22 @@
       "Open": "Spell sheet"
     },
     "Edit": {
-      "Toggle": "Edit the grimoire",
+      "Toggle": "Edit the tome",
       "Language": "Language",
       "CustomLanguage": "Other language",
       "Cover": "Cover",
-      "Describe": "Write description",
-      "DropHint": "Drop spells on the grimoire to add them",
+      "DropHint": "Drop entries on the pages to add them",
       "Up": "Move up",
       "Down": "Move down",
       "Remove": "Remove",
-      "RemoveTitle": "Remove spell",
-      "RemoveConfirm": "Remove {spell} from the grimoire?"
-    },
-    "Describe": {
-      "Summary": "This grimoire, written in {language}, holds {list}.",
-      "Lore": "{count} × {lore}",
-      "Done": "Grimoire description updated."
+      "RemoveTitle": "Remove entry",
+      "RemoveConfirm": "Remove {name} from the tome?",
+      "Needs": {
+        "readWrite": "Reader must be literate",
+        "language": "Reader must know the language",
+        "carried": "Must be carried",
+        "lore": "Caster must know the Lore"
+      }
     },
     "Learn": {
       "Title": "Memorise a spell",
@@ -100,22 +100,14 @@
       "guilder": "Guilder"
     },
     "Notify": {
-      "OnlySpells": "Only spells can be written into a grimoire.",
-      "AlreadyInBook": "{spell} is already in this grimoire."
+      "AlreadyInBook": "{name} is already in this tome.",
+      "NotWritable": "This can't be written here."
     },
     "Settings": {
-      "RequireCarriedName": "Grimoire must be carried",
-      "RequireCarriedHint": "Spells can be cast from a grimoire only when it is marked as carried in the inventory.",
-      "RequireReadWriteName": "Require Read/Write",
-      "RequireReadWriteHint": "Characters without the Read/Write talent can't read grimoires.",
-      "RequireLanguageName": "Require the grimoire's language",
-      "RequireLanguageHint": "Characters must know the Language the grimoire is written in (Magick by default).",
-      "RequireLoreName": "Require the spell's Lore",
-      "RequireLoreHint": "Only characters with Arcane Magic in the spell's Lore (or Petty Magic for petty spells) can cast it from a grimoire.",
       "ConsumeOnFailureName": "Failed scroll test uses up the scroll",
       "ConsumeOnFailureHint": "When off, a scroll is used up only after a successful casting test.",
-      "RenameScrollsName": "Name scrolls after their spell",
-      "RenameScrollsHint": "Inscribing a spell renames the scroll, e.g. \"Scroll of Fireball\"."
+      "RenameScrollsName": "Name scrolls after their contents",
+      "RenameScrollsHint": "Inscribing an entry renames the scroll."
     },
     "Aliases": {
       "ReadWrite": "Read/Write",
@@ -154,25 +146,27 @@
       }
     },
     "Scroll": {
-      "NewScroll": "Empty Magic Scroll",
-      "NamePattern": "Scroll of {spell}",
+      "NewScroll": "Blank Scroll",
+      "NamePattern": "{name} (scroll)",
       "FromScroll": "Scroll",
       "Cast": "Read and cast",
       "CannotRead": "You can't read this scroll.",
       "NoneLeft": "There are no scrolls left.",
       "Failed": "Casting from the scroll failed. See the console (F12) for details.",
       "Consumed": "{scroll} crumbles to dust – it was the last one.",
-      "NoSpellFound": "No spell matches the random scroll criteria.",
       "CountTooltip": "Number of scrolls",
       "Edit": "Edit the scroll",
-      "DropHint": "Drop a spell on the scroll to inscribe it",
+      "DropHint": "Drop an entry on the scroll to inscribe it",
       "Empty": "This scroll is blank.",
       "EmptyEditable": "This scroll is blank. Drag a spell here from a compendium, the Items directory or a character sheet.",
       "NoteNoActor": "Give the scroll to a character to cast from it.",
       "NoteConsume": "Reading the scroll casts the spell with its normal CN; the scroll is used up whether the test succeeds or not.",
       "NoteConsumeOnSuccess": "Reading the scroll casts the spell with its normal CN; the scroll is used up only if the test succeeds."
     },
-    "CreateType": "Spellbook",
-    "CreateHint": "A book that holds spells. It is a Books and Documents trapping, so it works with the inventory and trading."
+    "CreateType": "Tome",
+    "CreateHint": "A book of spells and other writings. It is a Books and Documents trapping, so it works with the inventory and trading.",
+    "Types": {
+      "spell": "Spells"
+    }
   }
 }

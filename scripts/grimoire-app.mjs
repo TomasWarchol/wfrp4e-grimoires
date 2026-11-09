@@ -1,19 +1,22 @@
 /**
- * Okno księgi zaklęć – rozkładówka: spis zaklęć według Tradycji po lewej, szczegóły po prawej.
+ * Okno księgi – rozkładówka: spis treści po lewej, wybrany wpis po prawej.
+ * O treści i akcjach wpisu decyduje jego typ (entry-types.mjs).
  */
 import { MODULE_ID, I18N, t } from "./constants.mjs";
-import { getEdition } from "./edition.mjs";
-import {
-  FLAG_SCOPE, FROM_BOOK_STATUSES, GRIMOIRE_FLAG, addSpell, effectiveCN, groupByLore, illegible, moveSpell,
-  readGrimoire, removeSpell, spellEntry, spellSummary
-} from "./grimoire-data.mjs";
+import { addEntry, groupEntries, illegible, moveEntry, readBook, removeEntry, writeBook } from "./grimoire-data.mjs";
+import { SPELL_TYPE } from "./spell-data.mjs";
+import { entryFromDrop, typeOf } from "./entry-types.mjs";
 import { LANGUAGES, normalize } from "./names.mjs";
-import { evaluateReading, requirementBadges, spellStatus } from "./requirements.mjs";
-import { actorView, castFromBook, isCarried, requestMemorize, syncCopies } from "./actors.mjs";
-import { getSettings } from "./settings.mjs";
+import { requirementBadges } from "./requirements.mjs";
+import { bookContext, syncCopies } from "./actors.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const TextEditorImpl = () => foundry.applications.ux.TextEditor.implementation;
+
+export const languageLabel = (key) => (game.i18n.has(`${I18N}.Languages.${key}`) ? t(`Languages.${key}`) : key);
+
+/** Pole wyboru warunku w trybie edycji. */
+const REQUIREMENT_TOGGLES = ["readWrite", "language", "carried", "lore"];
 
 export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /** Otwarte okna według UUID księgi (jedno okno na księgę). */
@@ -42,17 +45,12 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
     window: { icon: "fa-solid fa-book-journal-whills", resizable: true },
     position: { width: 920, height: 660 },
     actions: {
-      selectSpell: GrimoireApp.#onSelect,
-      cast: GrimoireApp.#onCast,
-      channel: GrimoireApp.#onChannel,
-      learn: GrimoireApp.#onLearn,
-      chat: GrimoireApp.#onChat,
-      openSpell: GrimoireApp.#onOpenSpell,
+      selectEntry: GrimoireApp.#onSelect,
+      entryAction: GrimoireApp.#onEntryAction,
       toggleEdit: GrimoireApp.#onToggleEdit,
-      removeSpell: GrimoireApp.#onRemove,
+      removeEntry: GrimoireApp.#onRemove,
       moveUp: GrimoireApp.#onMove,
-      moveDown: GrimoireApp.#onMove,
-      describe: GrimoireApp.#onDescribe
+      moveDown: GrimoireApp.#onMove
     }
   };
 
@@ -72,8 +70,8 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
     return this.book.name;
   }
 
-  get grimoire() {
-    return readGrimoire(this.book);
+  get data() {
+    return readBook(this.book);
   }
 
   get canEdit() {
@@ -88,94 +86,88 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
   /* -------------------------------------------- */
 
   async _prepareContext() {
-    const grimoire = this.grimoire ?? { spells: [], language: "magick" };
-    const settings = getSettings();
-    const actor = this.book.actor;
-    const config = game.wfrp4e?.config ?? {};
-    const loreLabel = (lore) => game.i18n.localize(config.magicLores?.[lore] ?? lore);
-    const isGM = game.user.isGM;
-
-    const view = actor ? actorView(actor) : null;
-    const reading = view ? evaluateReading(view, grimoire, settings) : { readable: true, readWrite: true, language: true };
+    const ctx = bookContext(this.book);
+    const { book, actor, reading, isGM } = ctx;
     const hidden = !reading.readable && !isGM;
-    const carried = isCarried(this.book);
 
-    const entries = grimoire.spells.map((entry) => {
-      const summary = spellSummary(entry.data);
-      const status = view ? spellStatus(view, summary, reading, settings, loreLabel) : "none";
-      return { entry, summary, status };
-    });
-
-    if (!this.selectedId || !entries.some((e) => e.entry.id === this.selectedId)) this.selectedId = entries[0]?.entry.id ?? null;
+    const rows = book.entries
+      .filter((entry) => isGM || !typeOf(entry).visible || typeOf(entry).visible(entry, ctx))
+      .map((entry) => {
+        const type = typeOf(entry);
+        return { entry, type, status: type.status(entry, ctx) };
+      });
+    if (!this.selectedId || !rows.some((r) => r.entry.id === this.selectedId)) this.selectedId = rows[0]?.entry.id ?? null;
 
     const query = normalize(this.search);
-    const visible = entries.filter((e) => !query || hidden || normalize(e.summary.name).includes(query));
-    const byId = new Map(visible.map((e) => [e.entry.id, e]));
-    const groups = groupByLore(visible.map((e) => e.entry), loreLabel).map((group) => ({
-      lore: group.lore,
-      label: hidden ? illegible(group.label) : group.label,
-      entries: group.entries.map((entry) => {
-        const e = byId.get(entry.id);
-        return {
-          id: entry.id,
-          name: hidden ? illegible(e.summary.name) : e.summary.name,
-          cn: effectiveCN(e.summary, e.status),
-          status: e.status,
-          statusLabel: t(`Status.${e.status}`),
-          selected: entry.id === this.selectedId
-        };
-      })
-    }));
+    const visible = rows.filter((r) => !query || hidden || normalize(r.type.name(r.entry)).includes(query));
+    const byId = new Map(visible.map((r) => [r.entry.id, r]));
+    const multipleTypes = new Set(rows.map((r) => r.type.id)).size > 1;
+    const seenOrders = new Set();
 
-    const selected = entries.find((e) => e.entry.id === this.selectedId);
+    const groups = groupEntries(visible.map((r) => r.entry), (entry) => ({
+      ...typeOf(entry).group(entry),
+      order: typeOf(entry).order ?? 0
+    })).map((group) => {
+      const firstOfType = !seenOrders.has(group.order);
+      seenOrders.add(group.order);
+      const labelKey = typeOf(group.entries[0]).labelKey;
+      return {
+        lore: group.key,
+        typeLabel: multipleTypes && firstOfType && labelKey ? game.i18n.localize(labelKey) : null,
+        label: hidden ? illegible(group.label) : group.label,
+        entries: group.entries.map((entry) => {
+          const row = byId.get(entry.id);
+          const name = row.type.name(entry);
+          return {
+            id: entry.id,
+            name: hidden ? illegible(name) : name,
+            corner: row.type.corner?.(entry, row.status, ctx) ?? "",
+            status: row.status,
+            statusLabel: row.type.statusLabel(row.status),
+            statusIcon: row.type.statusIcon?.(row.status) ?? "",
+            selected: entry.id === this.selectedId
+          };
+        })
+      };
+    });
+
+    const selected = rows.find((r) => r.entry.id === this.selectedId);
     let details = null;
     if (selected) {
-      const s = selected.summary;
-      const owner = actor?.isOwner;
-      // Niezapamiętane zaklęcie z karty rzuca się z księgi – wymaga księgi przy sobie, jak kopia
-      const fromBook = FROM_BOOK_STATUSES.includes(selected.status);
-      const castable = fromBook && carried && owner;
-      const cn = effectiveCN(s, selected.status);
+      const name = selected.type.name(selected.entry);
+      const info = await selected.type.details(selected.entry, selected.status, ctx);
       details = {
         id: selected.entry.id,
-        name: hidden ? illegible(s.name) : s.name,
-        img: s.img,
-        lore: s.lores.map(loreLabel).join(", "),
-        cn,
-        // Przy rzucaniu z księgi pokazujemy też PM po zapamiętaniu (system podwaja PM niezapamiętanych)
-        baseCN: cn !== s.cn ? s.cn : null,
-        range: s.range,
-        target: s.target,
-        duration: s.duration,
+        name: hidden ? illegible(name) : name,
+        subtitle: hidden ? illegible(info.subtitle) : info.subtitle,
+        stats: info.stats,
+        description: hidden ? "" : info.description,
         hidden,
-        description: hidden ? "" : await TextEditorImpl().enrichHTML(s.description, { relativeTo: this.book, secrets: isGM }),
         status: selected.status,
-        note: fromBook && !carried && actor
-          ? t("Note.notCarried")
-          : t(`Note.${selected.status}`, { lore: s.lores.map(loreLabel).join(", ") }),
-        canCast: castable,
-        canChannel: castable && !s.isPetty && s.cn > 0 && getEdition() !== "5e",
-        // Zapamiętanie: te same warunki co rzucanie (czytanie + Tradycja); koszt PD liczy system
-        canLearn: owner && [...FROM_BOOK_STATUSES, "learnable"].includes(selected.status)
+        note: info.note,
+        actions: hidden ? [] : info.actions
       };
     }
 
-    const languageLabel = (key) => game.i18n.has(`${I18N}.Languages.${key}`) ? t(`Languages.${key}`) : key;
+    const hasSpells = book.entries.some((entry) => entry.type === SPELL_TYPE) || book.entries.length === 0;
     return {
       book: this.book,
-      cover: grimoire.cover,
-      languageLabel: languageLabel(grimoire.language),
-      languages: Object.keys(LANGUAGES).map((key) => ({ key, label: languageLabel(key), selected: key === grimoire.language })),
-      customLanguage: LANGUAGES[grimoire.language] ? "" : grimoire.language,
-      badges: actor ? requirementBadges(reading, settings).map((b) => ({
+      cover: book.cover,
+      languageLabel: languageLabel(book.language),
+      languages: Object.keys(LANGUAGES).map((key) => ({ key, label: languageLabel(key), selected: key === book.language })),
+      customLanguage: LANGUAGES[book.language] ? "" : book.language,
+      badges: actor ? requirementBadges(reading, book.requirements).map((b) => ({
         ...b,
-        label: b.key === "language" ? t("Badge.language", { language: languageLabel(grimoire.language) }) : t(`Badge.${b.key}`)
+        label: b.key === "language" ? t("Badge.language", { language: languageLabel(book.language) }) : t(`Badge.${b.key}`)
       })) : [],
+      requirementToggles: REQUIREMENT_TOGGLES
+        .filter((key) => key !== "lore" || hasSpells)
+        .map((key) => ({ key, label: t(`Edit.Needs.${key}`), checked: book.requirements[key] })),
       actorName: actor?.name,
-      carried,
-      showCarried: Boolean(actor) && settings.requireCarried,
+      carried: ctx.carried,
+      showCarried: Boolean(actor) && book.requirements.carried,
       groups,
-      empty: grimoire.spells.length === 0,
+      empty: rows.length === 0,
       details,
       canEdit: this.canEdit,
       editMode: this.editMode && this.canEdit,
@@ -200,13 +192,20 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
       }), 200);
     });
 
-    html.querySelector("select[name=language]")?.addEventListener("change", (ev) => this.#updateGrimoire({ language: ev.target.value }));
+    html.querySelector("select[name=language]")?.addEventListener("change", (ev) => this.#updateBook({ language: ev.target.value }));
     html.querySelector("input[name=customLanguage]")?.addEventListener("change", (ev) => {
-      if (ev.target.value.trim()) this.#updateGrimoire({ language: ev.target.value.trim() });
+      if (ev.target.value.trim()) this.#updateBook({ language: ev.target.value.trim() });
     });
-    html.querySelector("input[name=cover]")?.addEventListener("change", (ev) => this.#updateGrimoire({ cover: ev.target.value }));
+    html.querySelector("input[name=cover]")?.addEventListener("change", (ev) => this.#updateBook({ cover: ev.target.value }));
+    for (const box of html.querySelectorAll("input[data-requirement]")) {
+      box.addEventListener("change", (ev) => this.#updateBook({
+        requirements: { ...this.data.requirements, [ev.target.dataset.requirement]: ev.target.checked }
+      }));
+    }
 
-    if (this.canEdit) {
+    // Element główny okna jest ten sam między renderami – nasłuch tylko raz
+    if (this.canEdit && this._dropBoundTo !== html) {
+      this._dropBoundTo = html;
       html.addEventListener("dragover", (ev) => ev.preventDefault());
       html.addEventListener("drop", (ev) => this.#onDrop(ev));
     }
@@ -219,26 +218,26 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   /* -------------------------------------------- */
 
-  async #updateGrimoire(changes) {
-    const current = this.grimoire ?? {};
-    await this.book.update({ [`flags.${FLAG_SCOPE}.${GRIMOIRE_FLAG}`]: { ...current, ...changes } });
+  async #updateBook(changes) {
+    await this.book.update(writeBook({ ...this.data, ...changes }));
   }
 
   async #onDrop(event) {
     const data = TextEditorImpl().getDragEventData(event);
-    if (data?.type !== "Item") return;
-    const item = await Item.implementation.fromDropData(data);
-    if (item?.type !== "spell") return ui.notifications.warn(t("Notify.OnlySpells"));
-    const entry = spellEntry(item.toObject(), { id: foundry.utils.randomID(), sourceUuid: item.uuid });
-    const { grimoire, added } = addSpell(this.grimoire, entry);
-    if (!added) return ui.notifications.info(t("Notify.AlreadyInBook", { spell: item.name }));
+    if (!data) return;
+    const found = await entryFromDrop(data);
+    if (!found) return ui.notifications.warn(t("Notify.NotWritable"));
+    const { entry, type } = found;
+    if (type.canWrite && !type.canWrite()) return ui.notifications.warn(game.i18n.localize(type.writeDeniedKey ?? `${I18N}.Notify.NotWritable`));
+    const { book, added } = addEntry(this.data, entry, type.same);
+    if (!added) return ui.notifications.info(t("Notify.AlreadyInBook", { name: type.name(entry) }));
     this.selectedId = entry.id;
-    await this.#updateGrimoire({ spells: grimoire.spells });
+    await this.#updateBook({ entries: book.entries });
   }
 
   #entry(target) {
     const id = target.closest("[data-entry-id]")?.dataset.entryId ?? this.selectedId;
-    return this.grimoire?.spells.find((s) => s.id === id);
+    return this.data?.entries.find((e) => e.id === id);
   }
 
   static #onSelect(_event, target) {
@@ -249,41 +248,9 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
     this.render({ parts: ["book"] });
   }
 
-  static async #onCast(_event, target) {
+  static async #onEntryAction(_event, target) {
     const entry = this.#entry(target);
-    if (entry) await castFromBook(this.book, entry);
-  }
-
-  static async #onChannel(_event, target) {
-    const entry = this.#entry(target);
-    if (entry) await castFromBook(this.book, entry, { channel: true });
-  }
-
-  static async #onLearn(_event, target) {
-    const entry = this.#entry(target);
-    if (entry) await requestMemorize(this.book, entry);
-  }
-
-  static async #onChat(_event, target) {
-    const entry = this.#entry(target);
-    if (!entry) return;
-    const s = spellSummary(entry.data);
-    const content = await foundry.applications.handlebars.renderTemplate(`modules/${MODULE_ID}/templates/chat-spell.hbs`, {
-      ...s,
-      lore: s.lores.map((l) => game.i18n.localize(game.wfrp4e?.config?.magicLores?.[l] ?? l)).join(", "),
-      description: await TextEditorImpl().enrichHTML(s.description),
-      book: this.book.name
-    });
-    await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this.book.actor }), content });
-  }
-
-  static async #onOpenSpell(_event, target) {
-    const entry = this.#entry(target);
-    if (!entry) return;
-    const source = entry.sourceUuid ? await fromUuid(entry.sourceUuid).catch(() => null) : null;
-    if (source?.sheet) return source.sheet.render(true);
-    const temp = new Item.implementation(foundry.utils.deepClone(entry.data));
-    return temp.sheet.render(true, { editable: false });
+    if (entry) await typeOf(entry).run(target.dataset.entryAction, entry, bookContext(this.book));
   }
 
   static #onToggleEdit() {
@@ -294,29 +261,18 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static async #onRemove(_event, target) {
     const entry = this.#entry(target);
     if (!entry) return;
+    const type = typeOf(entry);
+    if (type.canWrite && !type.canWrite()) return ui.notifications.warn(game.i18n.localize(type.writeDeniedKey ?? `${I18N}.Notify.NotWritable`));
     const ok = await foundry.applications.api.DialogV2.confirm({
       window: { title: t("Edit.RemoveTitle") },
-      content: `<p>${t("Edit.RemoveConfirm", { spell: foundry.utils.escapeHTML(entry.data.name) })}</p>`
+      content: `<p>${t("Edit.RemoveConfirm", { name: foundry.utils.escapeHTML(type.name(entry)) })}</p>`
     });
-    if (ok) await this.#updateGrimoire({ spells: removeSpell(this.grimoire, entry.id).spells });
+    if (ok) await this.#updateBook({ entries: removeEntry(this.data, entry.id).entries });
   }
 
   static async #onMove(_event, target) {
     const entry = this.#entry(target);
     const direction = target.dataset.action === "moveUp" ? -1 : 1;
-    if (entry) await this.#updateGrimoire({ spells: moveSpell(this.grimoire, entry.id, direction).spells });
-  }
-
-  static async #onDescribe() {
-    const grimoire = this.grimoire;
-    const config = game.wfrp4e?.config ?? {};
-    const loreLabel = (lore) => game.i18n.localize(config.magicLores?.[lore] ?? lore);
-    const groups = groupByLore(grimoire.spells, loreLabel);
-    const parts = groups.map((g) => t("Describe.Lore", { count: g.entries.length, lore: g.label || "—" }));
-    const language = game.i18n.has(`${I18N}.Languages.${grimoire.language}`) ? t(`Languages.${grimoire.language}`) : grimoire.language;
-    const html = `<p>${t("Describe.Summary", { language, list: parts.join(", ") })}</p>` +
-      `<ul>${grimoire.spells.map((s) => `<li>${foundry.utils.escapeHTML(s.data.name)}</li>`).join("")}</ul>`;
-    await this.book.update({ "system.description.value": html });
-    ui.notifications.info(t("Describe.Done"));
+    if (entry) await this.#updateBook({ entries: moveEntry(this.data, entry.id, direction).entries });
   }
 }

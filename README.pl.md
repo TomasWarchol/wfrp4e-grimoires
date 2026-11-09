@@ -2,14 +2,14 @@
 
 [English](README.md) | **Polski**
 
-Księgi zaklęć dla **WFRP4e 10.x**: osobny dział w ekwipunku i okno otwartej księgi ze spisem zaklęć według Tradycji, pełnymi szczegółami czaru, rzucaniem z księgi i zapamiętywaniem zaklęć za zgodą MG. Do tego zwoje magiczne.
+Księgi i zwoje dla **WFRP4e 10.x**: osobne działy w ekwipunku i okno otwartej księgi ze spisem treści, pełnymi szczegółami wpisu, rzucaniem z księgi i zapamiętywaniem zaklęć za zgodą MG. Księga może zawierać nie tylko zaklęcia: inne moduły dokładają własne rodzaje wpisów, na przykład receptury z *Alchemii Starego Świata*.
 
 ## 📖 Jak to działa
 
 * Księga to zwykły przedmiot systemu (*Książki i dokumenty*) oznaczony przez moduł. Ma wagę, cenę, dostępność, kontenery i handel, działa z Item Piles. Bez modułu zostaje zwykłą książką.
-* **Księgi zaklęć** mają własny dział w ekwipunku z przełącznikiem **Przy sobie**. Ikona książki w wierszu (albo obrazek przedmiotu) otwiera księgę, a **+** tworzy nową.
-* Nową księgę tworzysz w oknie **Utwórz przedmiot**, wybierając typ **Księga zaklęć**.
-* Każdą książkę można zamienić w księgę zaklęć: **Uczyń księgą zaklęć** w nagłówku arkusza przedmiotu.
+* **Księgi** mają własny dział w ekwipunku z przełącznikiem **Przy sobie**. Ikona książki w wierszu (albo obrazek przedmiotu) otwiera księgę, a **+** tworzy nową.
+* Nową księgę tworzysz w oknie **Utwórz przedmiot**, wybierając typ **Księga**.
+* Każdą książkę można zamienić w księgę: **Uczyń księgą** w nagłówku arkusza przedmiotu.
 
 ## 🪄 Okno księgi
 
@@ -18,7 +18,7 @@ Księgi zaklęć dla **WFRP4e 10.x**: osobny dział w ekwipunku i okno otwartej 
 * **Nagłówek**: plakietki warunków dla postaci, czyli Czytanie/Pisanie, język księgi i Przy sobie.
 * **Akcje**: **Rzuć z księgi**, **Splataj** (4e), **Zapamiętaj**, **Na czat**, **Karta zaklęcia**.
 * Postać, która nie umie przeczytać księgi, widzi nieczytelne runy zamiast nazw zaklęć. MG zawsze widzi treść.
-* **Tryb edycji** (przycisk ✒, tylko właściciel i MG): przeciąganie zaklęć na księgę, kolejność, usuwanie, język (Magiczny, Reikspiel, Eltharin… albo własny), kolor oprawy, opis przedmiotu.
+* **Tryb edycji** (przycisk ✒, tylko właściciel i MG): przeciąganie wpisów na księgę, kolejność, usuwanie, język (Magiczny, Reikspiel, Eltharin… albo własny), kolor oprawy oraz to, czego ta księga wymaga od czytelnika: umiejętności czytania, znajomości języka, noszenia przy sobie, a przy zaklęciach także znajomości Tradycji.
 
 ## ✨ Zaklęcia z księgi na karcie
 
@@ -30,23 +30,19 @@ Gdy księga jest przy postaci, każde zaklęcie, które postać może z niej rzu
 
 **Zapamiętaj** wysyła prośbę do MG. Po zgodzie MG systemowe okno *Memorize Spell* wylicza koszt PD według zasad (Ok / za darmo). Zaklęcie staje się własnym zaklęciem postaci: **M** jest zaznaczone, nie zależy już od księgi, a PD trafiają do dziennika doświadczenia. To samo dzieje się po zaznaczeniu **M** przy kopii z księgi bezpośrednio na karcie.
 
-## 📜 Zwoje magiczne
+## 📜 Zwoje
 
-* Zwój to też przedmiot z *Książek i dokumentów* oznaczony przez moduł: jedno zaklęcie i język, a ilość oznacza liczbę zwojów. Zwoje mają własny dział **Zwoje magiczne**; każdy dokument można zamienić w zwój przyciskiem **Uczyń zwojem magicznym**.
-* Okno zwoju pokazuje zaklęcie, plakietki warunków i liczbę pozostałych zwojów.
+* Zwój to księga na jeden wpis, która się zużywa: przedmiot z *Książek i dokumentów* z językiem, a ilość oznacza liczbę zwojów. Zwoje mają własny dział **Zwoje**; każdy dokument można zamienić w zwój przyciskiem **Uczyń zwojem**.
+* Okno zwoju pokazuje wpis, plakietki warunków i liczbę pozostałych zwojów.
 * **Odczytaj i rzuć** uruchamia zwykły test rzucania systemu z bazowym PM zaklęcia, nawet gdy postać go nie zna, więc karty czatu (obrażenia, przeciążenie) działają jak zwykle. Potem zużywa się jeden zwój (opcjonalnie tylko po udanym teście). Ostatni rozsypuje się w pył.
 * Rzucić ze zwoju może każdy, kto umie go odczytać (Czytanie/Pisanie i jego język, jeśli wymagane); znajomość Tradycji nie jest potrzebna.
-* Makro MG na losowy zwój: `game.modules.get("wfrp4e-grimoires").api.scrolls.random({ lore: "fire", maxCN: 8, actor })` (bez `actor` zwój trafia do katalogu przedmiotów).
-
 
 ## ⚙️ Ustawienia (świat)
 
-* Księga musi być przy sobie
-* Wymagaj Czytania/Pisania
-* Wymagaj języka księgi
-* Wymagaj Tradycji zaklęcia (Magia Tajemna danej Tradycji albo Magia Prosta dla magii prostej)
 * Nieudany test zużywa zwój
-* Nazywaj zwoje od zaklęcia
+* Nazywaj zwoje od zawartości
+
+To, czego księga wymaga od czytelnika, ustawia się przy każdej księdze w trybie edycji.
 
 Talenty i umiejętności są rozpoznawane **po angielsku i po polsku** (np. *Arcane Magic (Life)* / *Magia Tajemna (Życia)*, *Language (Magick)* / *Język (Magiczny)*), niezależnie od języka interfejsu Foundry. Postać zna też Tradycję, jeśli zna już jakieś jej zaklęcie.
 
@@ -60,10 +56,13 @@ Talenty i umiejętności są rozpoznawane **po angielsku i po polsku** (np. *Arc
 ```javascript
 const api = game.modules.get("wfrp4e-grimoires").api;
 api.create(actor);   // nowa księga u postaci
-api.make(item);      // zamiana książki w księgę zaklęć
+api.make(item);      // zamiana książki w księgę
 api.open(item);      // otwarcie okna księgi
-api.read(item);      // { language, cover, spells: [...] }
+api.read(item);      // { form, language, cover, requirements, entries: [{ id, type, sourceUuid, data }] }
+api.registerEntryType(type); // nowy rodzaj wpisów
 ```
+
+Typ wpisu decyduje o wyglądzie i działaniu wpisu; okno, spis treści, warunki czytania i edycja są wspólne. Kontrakt opisuje `scripts/entry-types.mjs`. Moduły tej serii importują bezpośrednio `scripts/public.mjs`. Wpisy wyłączonego modułu zostają w księdze i wracają do działania po jego ponownym włączeniu.
 
 ## 🌐 Języki
 

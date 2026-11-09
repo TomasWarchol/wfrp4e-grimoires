@@ -1,31 +1,22 @@
 /**
- * Dane zwoju magicznego – bez zależności od Foundry.
+ * Dane zwoju – bez zależności od Foundry.
  *
- * Zwój to zwykły przedmiot systemu (trapping, "Książki i dokumenty") z flagą modułu:
- *   flags["wfrp4e-grimoires"].scroll = {
- *     language: "magick",                 // klucz z names.LANGUAGES albo własny tekst
- *     spell: { id, sourceUuid, data } | null
- *   }
- * Liczba zwojów to zwykła ilość przedmiotu (system.quantity.value).
+ * Zwój to księga w formie "scroll": jeden wpis, a liczba zwojów to zwykła ilość
+ * przedmiotu (system.quantity.value).
  */
-import { FLAG_SCOPE } from "./grimoire-data.mjs";
+import { FORM_SCROLL, emptyBook, isScroll, readBook } from "./grimoire-data.mjs";
 
-export const SCROLL_FLAG = "scroll";
+export { isScroll };
 
 export function emptyScroll() {
-  return { language: "magick", spell: null };
+  return emptyBook(FORM_SCROLL);
 }
 
-export function isScroll(item) {
-  return Boolean(item?.flags?.[FLAG_SCOPE]?.[SCROLL_FLAG]);
-}
-
-/** Odczyt danych zwoju; `null`, gdy przedmiot nie jest zwojem. */
+/** Odczyt danych zwoju; `null`, gdy przedmiot nie jest zwojem. `entry` to jedyny wpis albo `null`. */
 export function readScroll(item) {
-  const raw = item?.flags?.[FLAG_SCOPE]?.[SCROLL_FLAG];
-  if (!raw) return null;
-  const spell = raw.spell?.data ? raw.spell : null;
-  return { language: raw.language || "magick", spell };
+  if (!isScroll(item)) return null;
+  const book = readBook(item);
+  return { ...book, entry: book.entries[0] ?? null };
 }
 
 /** Liczba zwojów w stosie. */
@@ -43,21 +34,7 @@ export function shouldConsume(test, { consumeOnFailure = true } = {}) {
   return consumeOnFailure || Boolean(test.succeeded);
 }
 
-/** Nazwa zwoju z nazwy zaklęcia, np. "Zwój: Kula ognia" (wzorzec z tłumaczenia, {spell} = nazwa). */
-export function scrollName(pattern, spellName) {
-  return String(pattern ?? "{spell}").replace("{spell}", spellName ?? "");
-}
-
-/**
- * Losuje zaklęcie na zwój z listy kandydatów (indeks kompendium).
- * @param {Array<{uuid: string, name: string, lores: string[], cn: number}>} candidates
- * @param {{lore?: string, maxCN?: number, random?: () => number}} filter
- */
-export function pickRandomSpell(candidates, { lore, maxCN, random = Math.random } = {}) {
-  const pool = candidates.filter((c) =>
-    (!lore || c.lores.includes(lore)) &&
-    (maxCN === undefined || maxCN === null || c.cn <= maxCN) &&
-    !c.lores.includes("petty"));
-  if (!pool.length) return null;
-  return pool[Math.floor(random() * pool.length)];
+/** Nazwa zwoju z nazwy wpisu (wzorzec z tłumaczenia, {name} = nazwa). */
+export function scrollName(pattern, name) {
+  return String(pattern ?? "{name}").replace("{name}", name ?? "");
 }

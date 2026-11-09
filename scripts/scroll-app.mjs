@@ -1,16 +1,20 @@
 /**
- * Okno zwoju magicznego – rozwinięty pergamin z jednym zaklęciem.
+ * Okno zwoju – rozwinięty pergamin z jednym wpisem dowolnego typu.
  */
 import { MODULE_ID, I18N, t } from "./constants.mjs";
-import { FLAG_SCOPE, illegible, spellSummary } from "./grimoire-data.mjs";
-import { SCROLL_FLAG, readScroll, scrollCount } from "./scroll-data.mjs";
+import { illegible, readBook, writeBook } from "./grimoire-data.mjs";
+import { readScroll, scrollCount } from "./scroll-data.mjs";
+import { entryFromDrop, typeOf } from "./entry-types.mjs";
 import { LANGUAGES } from "./names.mjs";
 import { requirementBadges } from "./requirements.mjs";
-import { castFromScroll, inscribeSpell, scrollReading } from "./scrolls.mjs";
+import { inscribeEntry } from "./scrolls.mjs";
+import { bookContext } from "./actors.mjs";
 import { getSettings } from "./settings.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const TextEditorImpl = () => foundry.applications.ux.TextEditor.implementation;
+
+const languageLabel = (key) => (game.i18n.has(`${I18N}.Languages.${key}`) ? t(`Languages.${key}`) : key);
 
 export class ScrollApp extends HandlebarsApplicationMixin(ApplicationV2) {
   static #open = new Map();
@@ -40,8 +44,7 @@ export class ScrollApp extends HandlebarsApplicationMixin(ApplicationV2) {
     window: { icon: "fa-solid fa-scroll", resizable: true },
     position: { width: 520, height: 640 },
     actions: {
-      cast: ScrollApp.#onCast,
-      chat: ScrollApp.#onChat,
+      entryAction: ScrollApp.#onEntryAction,
       toggleEdit: ScrollApp.#onToggleEdit
     }
   };
@@ -66,46 +69,38 @@ export class ScrollApp extends HandlebarsApplicationMixin(ApplicationV2) {
   }
 
   async _prepareContext() {
-    const data = readScroll(this.scroll) ?? { language: "magick", spell: null };
-    const settings = getSettings();
-    const actor = this.scroll.actor;
-    const reading = scrollReading(this.scroll);
-    const hidden = !reading.readable && !game.user.isGM;
-    const config = game.wfrp4e?.config ?? {};
-    const loreLabel = (lore) => game.i18n.localize(config.magicLores?.[lore] ?? lore);
-    const languageLabel = (key) => game.i18n.has(`${I18N}.Languages.${key}`) ? t(`Languages.${key}`) : key;
+    const ctx = bookContext(this.scroll);
+    const { book, actor, reading, isGM } = ctx;
+    const hidden = !reading.readable && !isGM;
+    const entry = book.entries[0] ?? null;
 
-    let spell = null;
-    if (data.spell) {
-      const s = spellSummary(data.spell.data);
-      spell = {
-        name: hidden ? illegible(s.name) : s.name,
-        img: s.img,
-        lore: hidden ? illegible(s.lores.map(loreLabel).join(", ")) : s.lores.map(loreLabel).join(", "),
-        cn: s.cn,
-        range: s.range,
-        target: s.target,
-        duration: s.duration,
-        description: hidden ? "" : await TextEditorImpl().enrichHTML(s.description, { relativeTo: this.scroll, secrets: game.user.isGM })
+    let details = null;
+    if (entry) {
+      const type = typeOf(entry);
+      const info = await type.details(entry, type.status(entry, ctx), ctx);
+      const name = type.name(entry);
+      details = {
+        name: hidden ? illegible(name) : name,
+        subtitle: hidden ? illegible(info.subtitle) : info.subtitle,
+        stats: info.stats,
+        description: hidden ? "" : info.description,
+        note: info.note,
+        actions: hidden ? info.actions.filter((a) => a.primary) : info.actions
       };
     }
 
-    const count = scrollCount(this.scroll);
     return {
-      spell,
+      details,
       hidden,
-      count,
-      languageLabel: languageLabel(data.language),
-      languages: Object.keys(LANGUAGES).map((key) => ({ key, label: languageLabel(key), selected: key === data.language })),
-      customLanguage: LANGUAGES[data.language] ? "" : data.language,
-      badges: actor ? requirementBadges(reading, settings).map((b) => ({
+      count: scrollCount(this.scroll),
+      languageLabel: languageLabel(book.language),
+      languages: Object.keys(LANGUAGES).map((key) => ({ key, label: languageLabel(key), selected: key === book.language })),
+      customLanguage: LANGUAGES[book.language] ? "" : book.language,
+      badges: actor ? requirementBadges(reading, book.requirements).map((b) => ({
         ...b,
-        label: b.key === "language" ? t("Badge.language", { language: languageLabel(data.language) }) : t(`Badge.${b.key}`)
+        label: b.key === "language" ? t("Badge.language", { language: languageLabel(book.language) }) : t(`Badge.${b.key}`)
       })) : [],
       actorName: actor?.name,
-      canCast: Boolean(actor?.isOwner && spell && reading.readable && count > 0),
-      note: !spell ? "" : !actor ? t("Scroll.NoteNoActor") : !reading.readable ? t("Scroll.CannotRead")
-        : settings.consumeOnFailure ? t("Scroll.NoteConsume") : t("Scroll.NoteConsumeOnSuccess"),
       canEdit: this.scroll.isOwner,
       editMode: this.editMode && this.scroll.isOwner
     };
@@ -121,40 +116,31 @@ export class ScrollApp extends HandlebarsApplicationMixin(ApplicationV2) {
       if (ev.target.value.trim()) this.#setLanguage(ev.target.value.trim());
     });
 
-    if (this.scroll.isOwner) {
+    // Element główny okna jest ten sam między renderami – nasłuch tylko raz
+    if (this.scroll.isOwner && this._dropBoundTo !== html) {
+      this._dropBoundTo = html;
       html.addEventListener("dragover", (ev) => ev.preventDefault());
       html.addEventListener("drop", (ev) => this.#onDrop(ev));
     }
   }
 
   async #setLanguage(language) {
-    const current = readScroll(this.scroll) ?? {};
-    await this.scroll.update({ [`flags.${FLAG_SCOPE}.${SCROLL_FLAG}`]: { ...current, language } });
+    await this.scroll.update(writeBook({ ...readBook(this.scroll), language }));
   }
 
   async #onDrop(event) {
     const dropData = TextEditorImpl().getDragEventData(event);
-    if (dropData?.type !== "Item") return;
-    const item = await Item.implementation.fromDropData(dropData);
-    if (item?.type !== "spell") return ui.notifications.warn(t("Notify.OnlySpells"));
-    await inscribeSpell(this.scroll, item, { rename: getSettings().renameScrolls });
+    if (!dropData) return;
+    const found = await entryFromDrop(dropData);
+    if (!found) return ui.notifications.warn(t("Notify.NotWritable"));
+    const { entry, type } = found;
+    if (type.canWrite && !type.canWrite()) return ui.notifications.warn(game.i18n.localize(type.writeDeniedKey ?? `${I18N}.Notify.NotWritable`));
+    await inscribeEntry(this.scroll, entry, { rename: getSettings().renameScrolls });
   }
 
-  static async #onCast() {
-    await castFromScroll(this.scroll);
-  }
-
-  static async #onChat() {
-    const data = readScroll(this.scroll);
-    if (!data?.spell) return;
-    const s = spellSummary(data.spell.data);
-    const content = await foundry.applications.handlebars.renderTemplate(`modules/${MODULE_ID}/templates/chat-spell.hbs`, {
-      ...s,
-      lore: s.lores.map((l) => game.i18n.localize(game.wfrp4e?.config?.magicLores?.[l] ?? l)).join(", "),
-      description: await TextEditorImpl().enrichHTML(s.description),
-      book: this.scroll.name
-    });
-    await ChatMessage.create({ speaker: ChatMessage.getSpeaker({ actor: this.scroll.actor }), content });
+  static async #onEntryAction(_event, target) {
+    const entry = readScroll(this.scroll)?.entry;
+    if (entry) await typeOf(entry).run(target.dataset.entryAction, entry, bookContext(this.scroll));
   }
 
   static #onToggleEdit() {

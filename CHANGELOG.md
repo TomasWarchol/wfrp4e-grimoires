@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0
+- **Book engine**: a tome now holds typed entries. Spells are one type; other modules add their own with `registerEntryType` (Old World Alchemy adds recipes). One tome can hold several types, and entries of a disabled module stay in the book.
+- A scroll is a one-entry tome, stored in the same format.
+- **Requirements belong to each book**: literacy, language, being carried and knowing the Lore are set in edit mode. The four world settings are gone from the settings window; a world's earlier choices stay as the defaults for books without their own.
+- Books and scrolls from earlier versions keep working and are saved in the new format the first time they change.
+- Removed: the **Write description** button and `api.scrolls.random`.
+- Renamed in the interface: Grimoires are now Tomes, Magic Scrolls are now Scrolls.
+- Fixed: reopening a book window no longer stacks drop handlers on its window.
+
 ## 0.4.1
 - A grimoire marked as Carried keeps its full encumbrance. The system treated it as worn gear and reduced it by 1.
 

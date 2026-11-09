@@ -39,7 +39,11 @@
       <label>{{localize "WFRP4E_GRIMOIRE.Edit.Cover"}}
         <input type="color" name="cover" value="{{cover}}">
       </label>
-      <button type="button" data-action="describe"><i class="fa-solid fa-scroll"></i> {{localize "WFRP4E_GRIMOIRE.Edit.Describe"}}</button>
+      <div class="grimoire-reqs">
+        {{#each requirementToggles}}
+          <label><input type="checkbox" data-requirement="{{key}}" {{#if checked}}checked{{/if}}> {{label}}</label>
+        {{/each}}
+      </div>
       <span class="grimoire-drop-hint"><i class="fa-solid fa-hand-pointer"></i> {{localize "WFRP4E_GRIMOIRE.Edit.DropHint"}}</span>
     </section>
   {{/if}}
@@ -57,24 +61,22 @@
           </p>
         {{/if}}
         {{#each groups}}
+          {{#if typeLabel}}<div class="grimoire-type-heading">{{typeLabel}}</div>{{/if}}
           <div class="grimoire-lore lore-{{lore}}">
             <i class="fa-solid fa-bookmark"></i> {{label}}
           </div>
           {{#each entries}}
-            <div class="grimoire-entry status-{{status}} {{#if selected}}selected{{/if}}" data-entry-id="{{id}}" data-action="selectSpell">
+            <div class="grimoire-entry status-{{status}} {{#if selected}}selected{{/if}}" data-entry-id="{{id}}" data-action="selectEntry">
               <span class="grimoire-entry-name">
-                {{#if (eq status "known")}}<i class="fa-solid fa-check" data-tooltip="{{statusLabel}}"></i>{{/if}}
-                {{#if (eq status "readOnly")}}<i class="fa-solid fa-eye" data-tooltip="{{statusLabel}}"></i>{{/if}}
-                {{#if (eq status "unmemorized")}}<i class="fa-solid fa-book-open" data-tooltip="{{statusLabel}}"></i>{{/if}}
-                {{#if (eq status "learnable")}}<i class="fa-solid fa-graduation-cap" data-tooltip="{{statusLabel}}"></i>{{/if}}
+                {{#if statusIcon}}<i class="fa-solid {{statusIcon}}" data-tooltip="{{statusLabel}}"></i>{{/if}}
                 {{name}}
               </span>
-              <span class="grimoire-entry-cn">{{#if cn}}{{localize "WFRP4E_GRIMOIRE.CNShort"}} {{cn}}{{/if}}</span>
+              <span class="grimoire-entry-cn">{{corner}}</span>
               {{#if ../../editMode}}
                 <span class="grimoire-entry-edit">
                   <a data-action="moveUp" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Edit.Up'}}"><i class="fa-solid fa-arrow-up"></i></a>
                   <a data-action="moveDown" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Edit.Down'}}"><i class="fa-solid fa-arrow-down"></i></a>
-                  <a data-action="removeSpell" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Edit.Remove'}}"><i class="fa-solid fa-trash"></i></a>
+                  <a data-action="removeEntry" data-tooltip="{{localize 'WFRP4E_GRIMOIRE.Edit.Remove'}}"><i class="fa-solid fa-trash"></i></a>
                 </span>
               {{/if}}
             </div>
@@ -88,34 +90,21 @@
     <section class="grimoire-page right">
       {{#if details}}
         <div class="grimoire-details" data-entry-id="{{details.id}}">
-          <div class="grimoire-details-lore">{{details.lore}}</div>
+          <div class="grimoire-details-lore">{{details.subtitle}}</div>
           <h2 class="grimoire-details-name">{{details.name}}</h2>
           {{#if details.hidden}}
             <p class="grimoire-illegible-note"><i class="fa-solid fa-eye-slash"></i> {{localize "WFRP4E_GRIMOIRE.Illegible"}}</p>
           {{else}}
             <div class="grimoire-stats">
-              <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.CN"}}</span><b>{{details.cn}}</b>{{#if details.baseCN}}<small>{{localize "WFRP4E_GRIMOIRE.Stat.CNMemorized" cn=details.baseCN}}</small>{{/if}}</div>
-              <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Range"}}</span><b>{{details.range}}</b></div>
-              <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Target"}}</span><b>{{details.target}}</b></div>
-              <div><span>{{localize "WFRP4E_GRIMOIRE.Stat.Duration"}}</span><b>{{details.duration}}</b></div>
+              {{#each details.stats}}<div><span>{{label}}</span><b>{{value}}</b>{{#if hint}}<small>{{hint}}</small>{{/if}}</div>{{/each}}
             </div>
             <div class="grimoire-description">{{{details.description}}}</div>
           {{/if}}
           <p class="grimoire-note status-{{details.status}}">{{details.note}}</p>
           <div class="grimoire-actions">
-            {{#if details.canCast}}
-              <button type="button" class="primary" data-action="cast"><i class="fa-solid fa-wand-sparkles"></i> {{localize "WFRP4E_GRIMOIRE.Action.Cast"}}</button>
-            {{/if}}
-            {{#if details.canChannel}}
-              <button type="button" data-action="channel"><i class="fa-solid fa-hurricane"></i> {{localize "WFRP4E_GRIMOIRE.Action.Channel"}}</button>
-            {{/if}}
-            {{#if details.canLearn}}
-              <button type="button" data-action="learn"><i class="fa-solid fa-graduation-cap"></i> {{localize "WFRP4E_GRIMOIRE.Action.Learn"}}</button>
-            {{/if}}
-            {{#unless details.hidden}}
-              <button type="button" data-action="chat"><i class="fa-solid fa-comment"></i> {{localize "WFRP4E_GRIMOIRE.Action.Chat"}}</button>
-              <button type="button" data-action="openSpell"><i class="fa-solid fa-up-right-from-square"></i> {{localize "WFRP4E_GRIMOIRE.Action.Open"}}</button>
-            {{/unless}}
+            {{#each details.actions}}
+              <button type="button" {{#if primary}}class="primary"{{/if}} data-action="entryAction" data-entry-action="{{id}}"><i class="fa-solid {{icon}}"></i> {{label}}</button>
+            {{/each}}
           </div>
         </div>
       {{else}}

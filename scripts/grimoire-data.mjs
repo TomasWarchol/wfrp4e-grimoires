@@ -1,131 +1,130 @@
 /**
- * Dane księgi zaklęć – bez zależności od Foundry.
+ * Model księgi – bez zależności od Foundry.
  *
- * Księga to zwykły przedmiot systemu (trapping, "Książki i dokumenty") z flagą modułu:
+ * Księga i zwój to zwykły przedmiot systemu (trapping, "Książki i dokumenty") z flagą modułu:
  *   flags["wfrp4e-grimoires"].grimoire = {
+ *     form: "book" | "scroll",       // zwój to księga na jeden wpis, zużywana po użyciu
  *     language: "magick",            // klucz z names.LANGUAGES albo własny tekst
  *     cover: "#7a1f1f",              // kolor oprawy
- *     spells: [{ id, sourceUuid, data }]   // kopie danych zaklęć (toObject bez _id)
+ *     requirements: { readWrite, language, lore, carried },
+ *     entries: [{ id, type, sourceUuid, data }]   // type: "spell", "recipe"… (patrz entry-types.mjs)
  *   }
+ *
+ * Starsze dane (`spells` w księdze, osobna flaga `scroll` dla zwoju) są rozpoznawane przy odczycie
+ * i zapisywane w nowej postaci przy pierwszej zmianie, dlatego nie ma osobnej migracji świata.
  */
 
 export const FLAG_SCOPE = "wfrp4e-grimoires";
 export const GRIMOIRE_FLAG = "grimoire";
+export const LEGACY_SCROLL_FLAG = "scroll";
 export const COPY_FLAG = "copy";
 
+export const FORM_BOOK = "book";
+export const FORM_SCROLL = "scroll";
+
 export const DEFAULT_COVER = "#6b2d1f";
+export const DEFAULT_LANGUAGE = "magick";
 
-/** Domyślne dane nowej księgi. */
-export function emptyGrimoire() {
-  return { language: "magick", cover: DEFAULT_COVER, spells: [] };
-}
+const requirementDefaults = { readWrite: true, language: true, lore: true, carried: true };
 
-/** Odczyt danych księgi z przedmiotu (dokument albo jego dane); `null`, gdy to nie księga. */
-export function readGrimoire(item) {
-  const raw = item?.flags?.[FLAG_SCOPE]?.[GRIMOIRE_FLAG];
-  if (!raw) return null;
-  return {
-    language: raw.language || "magick",
-    cover: raw.cover || DEFAULT_COVER,
-    spells: Array.isArray(raw.spells) ? raw.spells.filter((s) => s?.id && s?.data) : []
-  };
-}
-
-export function isGrimoire(item) {
-  return Boolean(item?.flags?.[FLAG_SCOPE]?.[GRIMOIRE_FLAG]);
-}
-
-/** Pola zaklęcia, których nie przenosimy do księgi (zależne od miejsca przechowywania). */
-const STRIP_KEYS = ["_id", "folder", "sort", "ownership", "_stats"];
-
-/** Kopia danych zaklęcia do zapisania w księdze. */
-export function spellEntry(spellData, { id, sourceUuid } = {}) {
-  const data = { ...spellData };
-  for (const key of STRIP_KEYS) delete data[key];
-  if (data.flags?.[FLAG_SCOPE]) {
-    data.flags = { ...data.flags };
-    delete data.flags[FLAG_SCOPE];
+/** Domyślne warunki księgi, która nie ma własnych (nowa albo sprzed wersji 0.5). */
+export function setRequirementDefaults(values = {}) {
+  for (const key of Object.keys(requirementDefaults)) {
+    if (typeof values[key] === "boolean") requirementDefaults[key] = values[key];
   }
-  return { id, sourceUuid: sourceUuid ?? null, data };
 }
 
-/** Dodaje zaklęcie; pomija duplikat (to samo źródło albo ta sama nazwa i Tradycja). */
-export function addSpell(grimoire, entry) {
-  const lore = (e) => JSON.stringify(spellLores(e.data));
-  const duplicate = grimoire.spells.some((s) =>
-    (entry.sourceUuid && s.sourceUuid === entry.sourceUuid) ||
-    (s.data.name === entry.data.name && lore(s) === lore(entry)));
-  if (duplicate) return { grimoire, added: false };
-  return { grimoire: { ...grimoire, spells: [...grimoire.spells, entry] }, added: true };
+/** Domyślne dane nowej księgi albo zwoju. */
+export function emptyBook(form = FORM_BOOK) {
+  return { form, language: DEFAULT_LANGUAGE, cover: DEFAULT_COVER, requirements: { ...requirementDefaults }, entries: [] };
 }
 
-export function removeSpell(grimoire, entryId) {
-  return { ...grimoire, spells: grimoire.spells.filter((s) => s.id !== entryId) };
+const flagsOf = (item) => item?.flags?.[FLAG_SCOPE];
+
+function formOf(item) {
+  const flags = flagsOf(item);
+  if (flags?.[GRIMOIRE_FLAG]) return flags[GRIMOIRE_FLAG].form === FORM_SCROLL ? FORM_SCROLL : FORM_BOOK;
+  return flags?.[LEGACY_SCROLL_FLAG] ? FORM_SCROLL : null;
 }
 
-/** Przesuwa zaklęcie w górę (-1) lub w dół (+1) w obrębie listy. */
-export function moveSpell(grimoire, entryId, direction) {
-  const spells = [...grimoire.spells];
-  const index = spells.findIndex((s) => s.id === entryId);
-  const target = index + direction;
-  if (index < 0 || target < 0 || target >= spells.length) return grimoire;
-  [spells[index], spells[target]] = [spells[target], spells[index]];
-  return { ...grimoire, spells };
-}
+export const isBook = (item) => formOf(item) !== null;
+export const isGrimoire = (item) => formOf(item) === FORM_BOOK;
+export const isScroll = (item) => formOf(item) === FORM_SCROLL;
 
-/** Tradycje zaklęcia (system 10.x trzyma tablicę, starsze wersje – tekst). */
-export function spellLores(data) {
-  const value = data?.system?.lore?.value;
-  return [value].flat().filter(Boolean);
-}
+/** Wpis z danych przedmiotu; starsze wpisy nie mają typu i są zaklęciami. */
+const typedEntry = (entry) => ({ ...entry, type: entry.type ?? "spell" });
+const validEntries = (list) => (Array.isArray(list) ? list.filter((e) => e?.id && e?.data).map(typedEntry) : []);
 
-/** Najważniejsze dane czaru do wyświetlenia. */
-export function spellSummary(data) {
-  const system = data?.system ?? {};
+/** Odczyt księgi lub zwoju z przedmiotu (dokument albo jego dane); `null`, gdy to coś innego. */
+export function readBook(item) {
+  const form = formOf(item);
+  if (!form) return null;
+  const flags = flagsOf(item);
+  const raw = flags[GRIMOIRE_FLAG];
+  const legacyScroll = !raw ? flags[LEGACY_SCROLL_FLAG] : null;
+  const source = raw ?? legacyScroll;
+  const entries = raw ? validEntries(raw.entries ?? raw.spells) : validEntries(legacyScroll.spell ? [legacyScroll.spell] : []);
   return {
-    name: data?.name ?? "",
-    img: data?.img,
-    lores: spellLores(data),
-    cn: Number(system.cn?.value ?? 0),
-    range: system.range?.value ?? "",
-    target: system.target?.value ?? "",
-    duration: system.duration?.value ?? "",
-    description: system.description?.value ?? "",
-    isPetty: spellLores(data).includes("petty"),
-    isRitual: Boolean(system.ritual?.value)
+    form,
+    language: source.language || DEFAULT_LANGUAGE,
+    cover: source.cover || DEFAULT_COVER,
+    requirements: { ...requirementDefaults, ...source.requirements },
+    entries
   };
 }
 
-/** Statusy, w których postać rzuca zaklęcie z księgi (czyli niezapamiętane). */
-export const FROM_BOOK_STATUSES = ["castable", "unmemorized"];
+/** Dane do `item.update` zapisujące księgę w aktualnej postaci (usuwa stare pola). */
+export function writeBook(book) {
+  return {
+    [`flags.${FLAG_SCOPE}.${GRIMOIRE_FLAG}`]: { ...book, "-=spells": null },
+    [`flags.${FLAG_SCOPE}.-=${LEGACY_SCROLL_FLAG}`]: null
+  };
+}
 
-/**
- * Poziom Mocy tak, jak liczy go system dla postaci: zaklęcie niezapamiętane (rzucane z księgi)
- * ma PM ×2, a niezapamiętany rytuał ×4. Magia prosta nie korzysta z ksiąg.
- */
-export function effectiveCN(summary, status) {
-  if (!FROM_BOOK_STATUSES.includes(status) || summary.isPetty) return summary.cn;
-  return summary.cn * (summary.isRitual ? 4 : 2);
+/** Wpisy danego typu. */
+export function entriesOfType(book, type) {
+  return (book?.entries ?? []).filter((entry) => entry.type === type);
 }
 
 /**
- * Grupuje wpisy według Tradycji: magia prosta pierwsza, potem alfabetycznie po etykiecie,
- * w grupie – w kolejności z księgi.
- * @param {Array} entries
- * @param {(lore: string) => string} loreLabel
+ * Dodaje wpis; pomija duplikat tego samego typu.
+ * @param {(a: object, b: object) => boolean} [same]  dodatkowe porównanie wpisów (zależne od typu)
  */
-export function groupByLore(entries, loreLabel) {
+export function addEntry(book, entry, same = () => false) {
+  const duplicate = book.entries.some((e) => e.type === entry.type &&
+    ((entry.sourceUuid && e.sourceUuid === entry.sourceUuid) || same(e, entry)));
+  if (duplicate) return { book, added: false };
+  return { book: { ...book, entries: [...book.entries, entry] }, added: true };
+}
+
+export function removeEntry(book, entryId) {
+  return { ...book, entries: book.entries.filter((e) => e.id !== entryId) };
+}
+
+/** Przesuwa wpis w górę (-1) lub w dół (+1) w obrębie listy. */
+export function moveEntry(book, entryId, direction) {
+  const entries = [...book.entries];
+  const index = entries.findIndex((e) => e.id === entryId);
+  const target = index + direction;
+  if (index < 0 || target < 0 || target >= entries.length) return book;
+  [entries[index], entries[target]] = [entries[target], entries[index]];
+  return { ...book, entries };
+}
+
+/**
+ * Grupuje wpisy do spisu treści. Grupy sortowane według typu, rangi i etykiety, w grupie kolejność z księgi.
+ * @param {Array} entries
+ * @param {(entry: object) => {key: string, label: string, rank?: number, order?: number}} describe
+ */
+export function groupEntries(entries, describe) {
   const groups = new Map();
   for (const entry of entries) {
-    const lore = spellLores(entry.data)[0] ?? "";
-    if (!groups.has(lore)) groups.set(lore, { lore, label: lore ? loreLabel(lore) : "", entries: [] });
-    groups.get(lore).entries.push(entry);
+    const { key, label, rank = 0, order = 0 } = describe(entry);
+    const id = `${order}:${key}`;
+    if (!groups.has(id)) groups.set(id, { key, label, rank, order, entries: [] });
+    groups.get(id).entries.push(entry);
   }
-  return [...groups.values()].sort((a, b) => {
-    if (a.lore === "petty") return -1;
-    if (b.lore === "petty") return 1;
-    return a.label.localeCompare(b.label);
-  });
+  return [...groups.values()].sort((a, b) => a.order - b.order || a.rank - b.rank || a.label.localeCompare(b.label));
 }
 
 /**

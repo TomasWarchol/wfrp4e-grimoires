@@ -7,12 +7,10 @@
  *  - pozycja "Księga zaklęć" w oknie tworzenia przedmiotu.
  */
 import { MODULE_ID, t } from "./constants.mjs";
-import { FLAG_SCOPE, GRIMOIRE_FLAG, emptyGrimoire, isGrimoire } from "./grimoire-data.mjs";
+import { FLAG_SCOPE, GRIMOIRE_FLAG, emptyBook, isGrimoire, isScroll } from "./grimoire-data.mjs";
 import { isCopy } from "./actors.mjs";
-import { getSettings } from "./settings.mjs";
 import { GrimoireApp } from "./grimoire-app.mjs";
 import { ScrollApp } from "./scroll-app.mjs";
-import { isScroll } from "./scroll-data.mjs";
 import { createScroll, makeScroll } from "./scrolls.mjs";
 
 const SECTION = "grimoires";
@@ -34,7 +32,7 @@ export async function createGrimoire(actor) {
     type: "trapping",
     name: t("NewGrimoire"),
     ...bookBase(),
-    flags: { [FLAG_SCOPE]: { [GRIMOIRE_FLAG]: emptyGrimoire() } }
+    flags: { [FLAG_SCOPE]: { [GRIMOIRE_FLAG]: emptyBook() } }
   }]);
   if (book) GrimoireApp.open(book);
   return book;
@@ -92,7 +90,7 @@ function registerCreateDialog() {
     item.updateSource({
       ...bookBase(),
       ...(unnamed ? { name: t("NewGrimoire") } : {}),
-      flags: { [FLAG_SCOPE]: { [GRIMOIRE_FLAG]: emptyGrimoire(), [`-=${CREATE_MARKER}`]: null } }
+      flags: { [FLAG_SCOPE]: { [GRIMOIRE_FLAG]: emptyBook(), [`-=${CREATE_MARKER}`]: null } }
     });
     options[OPEN_AFTER_CREATE] = true;
   });
@@ -106,7 +104,7 @@ function registerCreateDialog() {
 export async function makeGrimoire(item) {
   await item.update({
     "system.trappingType.value": "booksAndDocuments",
-    [`flags.${FLAG_SCOPE}.${GRIMOIRE_FLAG}`]: emptyGrimoire()
+    [`flags.${FLAG_SCOPE}.${GRIMOIRE_FLAG}`]: emptyBook()
   });
   GrimoireApp.open(item);
 }
@@ -121,11 +119,10 @@ export function registerInventory() {
     const grimoires = books.filter(isGrimoire);
     const scrolls = books.filter(isScroll);
     if (categories.booksAndDocuments) categories.booksAndDocuments.items = books.filter((i) => !isGrimoire(i) && !isScroll(i));
-    const requireCarried = getSettings().requireCarried;
     categories[SECTION] = {
       label: t("Inventory.Section"),
       items: grimoires,
-      toggle: requireCarried,
+      toggle: true,
       toggleName: t("Inventory.Carried"),
       show: false,
       collapsed: collapsed?.[SECTION],

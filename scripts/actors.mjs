@@ -7,10 +7,10 @@
  * Zapamiętanie (ustawienie M) kosztuje PD wyliczane przez system jego własnym oknem.
  */
 import { MODULE_ID, t, log } from "./constants.mjs";
-import { COPY_FLAG, isGrimoire, readGrimoire, spellLores, spellSummary } from "./grimoire-data.mjs";
-import { evaluateReading, spellStatus } from "./requirements.mjs";
+import { COPY_FLAG, FORM_BOOK, entriesOfType, isGrimoire, readBook } from "./grimoire-data.mjs";
+import { SPELL_TYPE, spellLores, spellSummary } from "./spell-data.mjs";
+import { accessReason, evaluateReading, spellStatus } from "./requirements.mjs";
 import { normalize } from "./names.mjs";
-import { getSettings } from "./settings.mjs";
 
 /** Czy zaklęcie jest kopią z księgi (nie liczy się jako znane). */
 export function isCopy(item) {
@@ -31,10 +31,41 @@ export function actorView(actor) {
   };
 }
 
-/** Czy księga jest "przy postaci" (posiadana, a przy ustawieniu – także założona). */
+/** Czy księga jest "przy postaci" (posiadana, a gdy księga tego wymaga – także założona). */
 export function isCarried(book) {
   if (!book?.actor) return false;
-  return !getSettings().requireCarried || Boolean(book.system?.equipped?.value);
+  return !readBook(book)?.requirements.carried || Boolean(book.system?.equipped?.value);
+}
+
+const OPEN_READING = Object.freeze({ readable: true, readWrite: true, language: true });
+
+/**
+ * Wszystko, czego typ wpisu potrzebuje o księdze i jej właścicielu.
+ * @returns {{item: Item, book: object, form: string, actor: Actor|null, view: object|null,
+ *   reading: object, carried: boolean, isGM: boolean}}
+ */
+export function bookContext(item) {
+  const book = readBook(item);
+  const actor = item.actor ?? null;
+  const view = actor ? actorView(actor) : null;
+  return {
+    item,
+    book,
+    form: book.form,
+    actor,
+    view,
+    reading: view ? evaluateReading(view, book) : OPEN_READING,
+    carried: isCarried(item),
+    isGM: game.user.isGM
+  };
+}
+
+/** Czy właściciel może korzystać z księgi; `reason`: "carried", "readWrite", "language" albo null. */
+export function bookAccess(item) {
+  if (!item?.actor) return { accessible: true, reason: null };
+  const { book, reading, carried } = bookContext(item);
+  const reason = accessReason(reading, book.requirements, { carried: book.form !== FORM_BOOK || carried });
+  return { accessible: reason === null, reason };
 }
 
 /** Kopie zaklęć z danej księgi na aktorze. */
@@ -47,19 +78,18 @@ export function ownedSpell(actor, entry) {
   return (actor?.itemTypes?.spell ?? []).find((i) => !isCopy(i) && normalize(i.name) === normalize(entry.data.name));
 }
 
-/** Statusy wszystkich wpisów księgi dla jej właściciela. */
+/** Statusy zaklęć księgi dla jej właściciela. */
 export function entryStatuses(book) {
-  const grimoire = readGrimoire(book);
+  const grimoire = readBook(book);
   const actor = book.actor;
   if (!grimoire || !actor) return [];
-  const settings = getSettings();
   const config = game.wfrp4e?.config ?? {};
   const loreLabel = (lore) => game.i18n.localize(config.magicLores?.[lore] ?? lore);
   const view = actorView(actor);
-  const reading = evaluateReading(view, grimoire, settings);
-  return grimoire.spells.map((entry) => ({
+  const reading = evaluateReading(view, grimoire);
+  return entriesOfType(grimoire, SPELL_TYPE).map((entry) => ({
     entry,
-    status: spellStatus(view, spellSummary(entry.data), reading, settings, loreLabel)
+    status: spellStatus(view, spellSummary(entry.data), reading, grimoire.requirements, loreLabel)
   }));
 }
 
@@ -154,7 +184,7 @@ const MEMORIZE_QUERY = `${MODULE_ID}.memorizeSpell`;
 export function registerMemorizeQuery() {
   CONFIG.queries[MEMORIZE_QUERY] = async ({ bookUuid, entryId }, { user }) => {
     const book = await fromUuid(bookUuid);
-    const entry = readGrimoire(book)?.spells.find((s) => s.id === entryId);
+    const entry = readBook(book)?.entries.find((s) => s.id === entryId);
     if (!book?.actor || !entry) return { ok: false };
     const approved = await foundry.applications.api.DialogV2.confirm({
       window: { title: t("Learn.Title") },
