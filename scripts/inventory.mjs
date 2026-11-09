@@ -67,6 +67,22 @@ function addToCreateDialog(element) {
   });
 }
 
+/**
+ * System traktuje założone przedmioty jak noszone i zmniejsza ich obciążenie o 1.
+ * Księga "przy sobie" nadal waży tyle samo.
+ */
+function keepBookWeight() {
+  const proto = CONFIG.Item.dataModels.trapping?.prototype;
+  const original = proto && Object.getOwnPropertyDescriptor(proto, "weighsLessEquipped");
+  if (!original?.get) return;
+  Object.defineProperty(proto, "weighsLessEquipped", {
+    configurable: true,
+    get() {
+      return !isGrimoire(this.parent) && original.get.call(this);
+    }
+  });
+}
+
 function registerCreateDialog() {
   Hooks.on("renderDialogV2", (_app, element) => addToCreateDialog(element));
 
@@ -97,6 +113,7 @@ export async function makeGrimoire(item) {
 
 export function registerInventory() {
   registerCreateDialog();
+  keepBookWeight();
 
   // Dział w ekwipunku: księgi wyjęte z "Książek i dokumentów"
   Hooks.on("wfrp4e:constructInventory", (_sheet, categories, collapsed) => {

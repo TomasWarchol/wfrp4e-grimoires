@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.1
+- A grimoire marked as Carried keeps its full encumbrance. The system treated it as worn gear and reduced it by 1.
+
 ## 0.4.0
 - **Spellbook** in the Create Item window: the new book opens right away.
 
