@@ -171,6 +171,8 @@
       "NoteNoActor": "Daj zwój postaci, aby z niego rzucić.",
       "NoteConsume": "Odczytanie zwoju rzuca zaklęcie ze zwykłym PM; zwój zużywa się niezależnie od wyniku testu.",
       "NoteConsumeOnSuccess": "Odczytanie zwoju rzuca zaklęcie ze zwykłym PM; zwój zużywa się tylko po udanym teście."
-    }
+    },
+    "CreateType": "Księga zaklęć",
+    "CreateHint": "Księga przechowująca zaklęcia. To przedmiot z działu Książki i dokumenty, więc działa z ekwipunkiem i handlem."
   }
 }

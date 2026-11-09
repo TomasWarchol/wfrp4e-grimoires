@@ -8,6 +8,7 @@ Księgi zaklęć dla **WFRP4e 10.x**: osobny dział w ekwipunku i okno otwartej 
 
 * Księga to zwykły przedmiot systemu (*Książki i dokumenty*) oznaczony przez moduł. Ma wagę, cenę, dostępność, kontenery i handel, działa z Item Piles. Bez modułu zostaje zwykłą książką.
 * **Księgi zaklęć** mają własny dział w ekwipunku z przełącznikiem **Przy sobie**. Ikona książki w wierszu (albo obrazek przedmiotu) otwiera księgę, a **+** tworzy nową.
+* Nową księgę tworzysz w oknie **Utwórz przedmiot**, wybierając typ **Księga zaklęć**.
 * Każdą książkę można zamienić w księgę zaklęć: **Uczyń księgą zaklęć** w nagłówku arkusza przedmiotu.
 
 ## 🪄 Okno księgi

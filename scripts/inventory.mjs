@@ -3,7 +3,8 @@
  *  - osobny dział "Księgi zaklęć" w ekwipunku (hook systemu wfrp4e:constructInventory),
  *  - ikona otwarcia księgi w wierszu, "+" tworzący nową księgę,
  *  - znacznik kopii zaklęć z księgi w zakładce Magia,
- *  - przycisk w nagłówku arkusza książki: "Otwórz księgę" / "Uczyń księgą zaklęć".
+ *  - przycisk w nagłówku arkusza książki: "Otwórz księgę" / "Uczyń księgą zaklęć",
+ *  - pozycja "Księga zaklęć" w oknie tworzenia przedmiotu.
  */
 import { MODULE_ID, t } from "./constants.mjs";
 import { FLAG_SCOPE, GRIMOIRE_FLAG, emptyGrimoire, isGrimoire } from "./grimoire-data.mjs";
@@ -17,17 +18,72 @@ import { createScroll, makeScroll } from "./scrolls.mjs";
 const SECTION = "grimoires";
 const SCROLL_SECTION = "scrolls";
 
+/** Znacznik z okna tworzenia przedmiotu; przed zapisem zamieniany na dane księgi. */
+const CREATE_MARKER = "newGrimoire";
+const OPEN_AFTER_CREATE = `${MODULE_ID}.openBook`;
+
+/** Wygląd i rodzaj przedmiotu nowej księgi (bez nazwy i danych księgi). */
+const bookBase = () => ({
+  img: "icons/sundries/books/book-embossed-gold-red.webp",
+  system: { trappingType: { value: "booksAndDocuments" }, encumbrance: { value: 1 } }
+});
+
 /** Tworzy nową księgę zaklęć na aktorze i otwiera ją. */
 export async function createGrimoire(actor) {
   const [book] = await actor.createEmbeddedDocuments("Item", [{
     type: "trapping",
     name: t("NewGrimoire"),
-    img: "icons/sundries/books/book-embossed-gold-red.webp",
-    system: { trappingType: { value: "booksAndDocuments" }, encumbrance: { value: 1 } },
+    ...bookBase(),
     flags: { [FLAG_SCOPE]: { [GRIMOIRE_FLAG]: emptyGrimoire() } }
   }]);
   if (book) GrimoireApp.open(book);
   return book;
+}
+
+/**
+ * Dokłada księgę do listy typów w oknie tworzenia przedmiotu. Księga jest zwykłym przedmiotem "trapping",
+ * więc pozycja niesie ten typ, a ukryte pole przekazuje znacznik do preCreateItem.
+ */
+function addToCreateDialog(element) {
+  const select = element.querySelector('select[name="type"]');
+  if (!select?.querySelector('option[value="trapping"]') || !select.querySelector('option[value="spell"]')) return;
+
+  const label = t("CreateType");
+  const option = new Option(label, "trapping");
+  option.dataset.grimoire = "true";
+  select.insertBefore(option, [...select.options].find((o) => o.label.localeCompare(label, game.i18n.lang) > 0) ?? null);
+
+  const marker = document.createElement("input");
+  Object.assign(marker, { type: "hidden", name: `flags.${FLAG_SCOPE}.${CREATE_MARKER}`, value: "true", disabled: true });
+  select.after(marker);
+
+  select.addEventListener("change", () => {
+    const chosen = Boolean(select.selectedOptions[0]?.dataset.grimoire);
+    marker.disabled = !chosen;
+    if (!chosen) return;
+    element.querySelector('[name="name"]').placeholder = t("NewGrimoire");
+    const hint = select.closest(".form-group").querySelector(".hint");
+    if (hint) hint.textContent = t("CreateHint");
+  });
+}
+
+function registerCreateDialog() {
+  Hooks.on("renderDialogV2", (_app, element) => addToCreateDialog(element));
+
+  Hooks.on("preCreateItem", (item, _data, options) => {
+    if (!item.flags[FLAG_SCOPE]?.[CREATE_MARKER]) return;
+    const unnamed = item.name === item.constructor.defaultName({ type: "trapping", parent: item.parent, pack: item.pack });
+    item.updateSource({
+      ...bookBase(),
+      ...(unnamed ? { name: t("NewGrimoire") } : {}),
+      flags: { [FLAG_SCOPE]: { [GRIMOIRE_FLAG]: emptyGrimoire(), [`-=${CREATE_MARKER}`]: null } }
+    });
+    options[OPEN_AFTER_CREATE] = true;
+  });
+
+  Hooks.on("createItem", (item, options, userId) => {
+    if (options[OPEN_AFTER_CREATE] && userId === game.user.id) GrimoireApp.open(item);
+  });
 }
 
 /** Zamienia zwykłą książkę (trapping) w księgę zaklęć. */
@@ -40,6 +96,8 @@ export async function makeGrimoire(item) {
 }
 
 export function registerInventory() {
+  registerCreateDialog();
+
   // Dział w ekwipunku: księgi wyjęte z "Książek i dokumentów"
   Hooks.on("wfrp4e:constructInventory", (_sheet, categories, collapsed) => {
     const books = categories.booksAndDocuments?.items ?? [];

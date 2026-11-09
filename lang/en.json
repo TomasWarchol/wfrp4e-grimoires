@@ -171,6 +171,8 @@
       "NoteNoActor": "Give the scroll to a character to cast from it.",
       "NoteConsume": "Reading the scroll casts the spell with its normal CN; the scroll is used up whether the test succeeds or not.",
       "NoteConsumeOnSuccess": "Reading the scroll casts the spell with its normal CN; the scroll is used up only if the test succeeds."
-    }
+    },
+    "CreateType": "Spellbook",
+    "CreateHint": "A book that holds spells. It is a Books and Documents trapping, so it works with the inventory and trading."
   }
 }

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.0
+- **Spellbook** in the Create Item window: the new book opens right away.
+
 ## 0.3.0
 - Removed the optional casting fatigue (Magical Endurance) house rule: its settings, badge, chat messages and the `endurance` API. Leftover `flags.wfrp4e-grimoires.endurance` on actors are ignored.
 

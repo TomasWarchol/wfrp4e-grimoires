@@ -8,6 +8,7 @@ Spellbooks for **WFRP4e 10.x**: their own inventory section and an open-book win
 
 * A grimoire is an ordinary system item (a *Books and Documents* trapping) marked by the module. It keeps its weight, price, availability, containers and trading, and works with Item Piles. Without the module it is just a book.
 * **Grimoires** get their own inventory section with a **Carried** toggle. The book icon in the row (or the item picture) opens the grimoire, and **+** creates a new one.
+* Create a new one in the **Create Item** window by choosing the **Spellbook** type.
 * Any book can become a grimoire: **Make into grimoire** in the item sheet header.
 
 ## 🪄 The grimoire window
