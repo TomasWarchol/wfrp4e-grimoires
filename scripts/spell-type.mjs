@@ -4,7 +4,9 @@
 import { I18N, MODULE_ID, t } from "./constants.mjs";
 import { getEdition } from "./edition.mjs";
 import { FORM_SCROLL } from "./grimoire-data.mjs";
-import { FROM_BOOK_STATUSES, SPELL_TYPE, effectiveCN, sameSpell, spellEntry, spellLores, spellSummary } from "./spell-data.mjs";
+import {
+  FLAW_CN_PENALTY, FROM_BOOK_STATUSES, SPELL_TYPE, effectiveCN, flawSpell, sameSpell, spellEntry, spellLores, spellPages, spellSummary
+} from "./spell-data.mjs";
 import { spellStatus } from "./requirements.mjs";
 import { castFromBook, requestMemorize } from "./actors.mjs";
 import { castFromScroll } from "./scrolls.mjs";
@@ -109,6 +111,10 @@ export const spellType = {
 
   same: sameSpell,
   name: (entry) => entry.data.name,
+
+  pages: (entry) => spellPages(spellSummary(entry.data)),
+  applyFlaw: flawSpell,
+  flawNote: () => t("Page.FlawSpell", { penalty: FLAW_CN_PENALTY }),
 
   group(entry) {
     const lore = spellLores(entry.data)[0] ?? "";

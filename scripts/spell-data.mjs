@@ -48,6 +48,20 @@ export function spellSummary(data) {
   };
 }
 
+/** Strony zajmowane przez zaklęcie: im wyższy PM, tym dłuższy zapis. */
+export function spellPages(summary) {
+  return 1 + Math.floor(summary.cn / 5);
+}
+
+/** O tyle rośnie PM zaklęcia w wadliwym odpisie. */
+export const FLAW_CN_PENALTY = 2;
+
+/** Wpis po nieudanym przepisaniu: wyższy PM. */
+export function flawSpell(entry) {
+  const cn = Number(entry.data?.system?.cn?.value ?? 0);
+  return { ...entry, data: { ...entry.data, system: { ...entry.data.system, cn: { ...entry.data.system?.cn, value: cn + FLAW_CN_PENALTY } } } };
+}
+
 /** Statusy, w których postać rzuca zaklęcie z księgi (czyli niezapamiętane). */
 export const FROM_BOOK_STATUSES = ["castable", "unmemorized"];
 

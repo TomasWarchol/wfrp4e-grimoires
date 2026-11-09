@@ -30,6 +30,16 @@ While a grimoire is carried, every spell the character can cast from it appears 
 
 **Memorise** asks the GM. After the GM allows it, the system's own *Memorize Spell* dialog sets the XP cost by the rules (Ok / Free). The spell becomes the character's own: **M** is ticked, it no longer depends on the grimoire, and the XP is logged. Ticking **M** on a grimoire copy straight on the sheet does the same.
 
+## 🔏 What a book can demand
+
+All of these are off by default. The GM sets them per book in edit mode.
+
+* **Pages**: a limit on how much fits. A spell takes 1 page, plus 1 for every 5 CN.
+* **Cipher**: each page must be worked out with a test of the skill you choose (the book's language by default). Each success adds its SL, and a page needs the set SL per page. A fumble or a failure of -3 SL or worse loses the work on that page. Progress belongs to the character.
+* **Forbidden**: reading a page for the first time is a Corruption exposure of the chosen strength, using the system's own test.
+
+**Copy to another book** writes an entry into another of the character's books with a Challenging test. A failure leaves a flawed copy (a spell has CN +2), and a failure of -2 SL or worse ruins it.
+
 ## 📜 Scrolls
 
 * A scroll is a one-entry tome that is used up: a *Books and Documents* trapping with a language, and its quantity is the number of scrolls. Scrolls get their own **Scrolls** inventory section; any document can become one with **Make into scroll**.

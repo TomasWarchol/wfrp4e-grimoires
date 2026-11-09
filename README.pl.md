@@ -30,6 +30,16 @@ Gdy księga jest przy postaci, każde zaklęcie, które postać może z niej rzu
 
 **Zapamiętaj** wysyła prośbę do MG. Po zgodzie MG systemowe okno *Memorize Spell* wylicza koszt PD według zasad (Ok / za darmo). Zaklęcie staje się własnym zaklęciem postaci: **M** jest zaznaczone, nie zależy już od księgi, a PD trafiają do dziennika doświadczenia. To samo dzieje się po zaznaczeniu **M** przy kopii z księgi bezpośrednio na karcie.
 
+## 🔏 Czego może wymagać księga
+
+Wszystko jest domyślnie wyłączone. MG ustawia to przy każdej księdze w trybie edycji.
+
+* **Strony**: limit tego, co się zmieści. Zaklęcie zajmuje 1 stronę, plus 1 na każde 5 PM.
+* **Szyfr**: każdą stronę trzeba odczytać testem wybranej umiejętności (domyślnie języka księgi). Każdy sukces dodaje swoje PS, a strona wymaga ustawionej liczby PS na stronę. Pech albo porażka o 3 PS lub więcej kasuje pracę nad tą stroną. Postęp należy do postaci.
+* **Zakazana**: pierwsze przeczytanie strony to ekspozycja na Zepsucie wybranej siły, ze zwykłym testem systemu.
+
+**Przepisz do innej księgi** zapisuje wpis w innej księdze postaci po teście Wymagającym. Porażka daje wadliwy odpis (zaklęcie ma PM +2), a porażka o 2 PS lub więcej niszczy odpis.
+
 ## 📜 Zwoje
 
 * Zwój to księga na jeden wpis, która się zużywa: przedmiot z *Książek i dokumentów* z językiem, a ilość oznacza liczbę zwojów. Zwoje mają własny dział **Zwoje**; każdy dokument można zamienić w zwój przyciskiem **Uczyń zwojem**.

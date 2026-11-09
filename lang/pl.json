@@ -26,7 +26,8 @@
       "readWrite": "Czytanie/Pisanie",
       "language": "Język ({language})",
       "carried": "Przy sobie",
-      "notCarried": "Nie przy sobie"
+      "notCarried": "Nie przy sobie",
+      "pages": "Strony: {used}/{total}"
     },
     "Status": {
       "known": "Znasz to zaklęcie",
@@ -77,7 +78,15 @@
         "language": "Trzeba znać język",
         "carried": "Trzeba mieć przy sobie",
         "lore": "Trzeba znać Tradycję"
-      }
+      },
+      "Pages": "Strony",
+      "Cipher": "Szyfr",
+      "CipherNone": "Brak",
+      "CipherSkill": "Umiejętność testu",
+      "CipherSkillDefault": "Język księgi",
+      "CipherSL": "PS na stronę",
+      "Forbidden": "Zakazana",
+      "ForbiddenNone": "Nie"
     },
     "Learn": {
       "Title": "Zapamiętanie zaklęcia",
@@ -101,7 +110,8 @@
     },
     "Notify": {
       "AlreadyInBook": "{name} jest już w tej księdze.",
-      "NotWritable": "Tego nie da się tu zapisać."
+      "NotWritable": "Tego nie da się tu zapisać.",
+      "NoRoom": "Za mało stron: potrzeba {needed}, wolnych {free}."
     },
     "Settings": {
       "ConsumeOnFailureName": "Nieudany test zużywa zwój",
@@ -167,6 +177,37 @@
     "CreateHint": "Księga zaklęć i innych zapisków. To przedmiot z działu Książki i dokumenty, więc działa z ekwipunkiem i handlem.",
     "Types": {
       "spell": "Zaklęcia"
+    },
+    "Page": {
+      "ciphered": "Strona szyfrowana",
+      "warded": "Strona zakazana",
+      "Note": {
+        "ciphered": "Ta strona jest zaszyfrowana. Każda próba dodaje uzyskane PS; pech albo porażka o 3 PS lub więcej kasuje dotychczasową pracę.",
+        "warded": "Przeczytanie tej strony to ekspozycja na Zepsucie: {strength}."
+      },
+      "Sealed": {
+        "ciphered": "Ta strona jest zaszyfrowana.",
+        "warded": "Jeszcze nie odważono się przeczytać tej strony."
+      },
+      "Decipher": "Odszyfruj",
+      "DecipherTitle": "Odszyfrowywanie: {book}",
+      "DecipherProgress": "Odczytano {progress}/{needed} PS tej strony.",
+      "Deciphered": "Odszyfrowano: {name}.",
+      "DecipherLost": "Notatki się rozsypują: praca nad tą stroną przepadła.",
+      "ReadForbidden": "Przeczytaj stronę zakazaną",
+      "ForbiddenConfirm": "Przeczytanie tej strony to ekspozycja na Zepsucie: {strength}. Czytać?",
+      "NeedsSkill": "Do tego potrzebna jest umiejętność {skill}.",
+      "Copy": "Przepisz do innej księgi",
+      "CopyTitle": "Przepisywanie do: {book}",
+      "CopyTarget": "Księga docelowa",
+      "CopyCost": "Materiały: {cost}",
+      "NoTarget": "Żadna inna księga tej postaci nie ma miejsca na ten wpis.",
+      "NoMaterials": "Brakuje materiałów: {cost}",
+      "Copied": "Przepisano {name} do: {book}.",
+      "CopiedFlawed": "Przepisano {name} do: {book}, z błędami.",
+      "CopyRuined": "Odpis {name} jest do niczego.",
+      "Flawed": "Wadliwy odpis",
+      "FlawSpell": "PM +{penalty}."
     }
   }
 }

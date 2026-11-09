@@ -7,7 +7,8 @@
  */
 import { FORM_BOOK, FORM_SCROLL, GRIMOIRE_FLAG, FLAG_SCOPE, addEntry, emptyBook, entriesOfType, isBook, isGrimoire, isScroll, readBook, writeBook } from "./grimoire-data.mjs";
 import { registerEntryType, getEntryType } from "./entry-types.mjs";
-import { bookAccess, bookContext } from "./actors.mjs";
+import { bookAccess, bookContext, openEntries } from "./actors.mjs";
+import { registerCopyCost } from "./book-actions.mjs";
 import { consumeScroll } from "./scrolls.mjs";
 import { createGrimoire } from "./inventory.mjs";
 import { GrimoireApp, languageLabel } from "./grimoire-app.mjs";
@@ -18,7 +19,7 @@ export {
   FLAG_SCOPE, GRIMOIRE_FLAG, FORM_BOOK, FORM_SCROLL,
   registerEntryType, getEntryType,
   isBook, isGrimoire, isScroll, readBook, writeBook, emptyBook, entriesOfType,
-  bookAccess, bookContext, consumeScroll, languageKey, languageLabel
+  bookAccess, bookContext, openEntries, registerCopyCost, consumeScroll, languageKey, languageLabel
 };
 
 /** Otwiera księgę albo zwój we właściwym oknie. */

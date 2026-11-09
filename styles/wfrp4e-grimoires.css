@@ -529,3 +529,28 @@
   text-transform: uppercase;
   opacity: 0.7;
 }
+
+.wfrp4e-grimoires .grimoire-rules {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.wfrp4e-grimoires .grimoire-rules label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.wfrp4e-grimoires .grimoire-rules input[type="number"] {
+  width: 56px;
+}
+
+.wfrp4e-grimoires .grimoire-rules input[type="text"] {
+  width: 130px;
+}
+
+.wfrp4e-grimoires .grimoire-flawed {
+  color: var(--grimoire-missing);
+}

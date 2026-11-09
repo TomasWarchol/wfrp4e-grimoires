@@ -7,7 +7,12 @@
  *     language: "magick",            // klucz z names.LANGUAGES albo własny tekst
  *     cover: "#7a1f1f",              // kolor oprawy
  *     requirements: { readWrite, language, lore, carried },
- *     entries: [{ id, type, sourceUuid, data }]   // type: "spell", "recipe"… (patrz entry-types.mjs)
+ *     entries: [{ id, type, sourceUuid, data, flawed? }],   // type: "spell", "recipe"… (patrz entry-types.mjs)
+ *     pages: 40 | null,              // limit stron, null = bez limitu
+ *     cipher: { difficulty, skill, slPerPage } | null,
+ *     forbidden: "minor" | "moderate" | "major" | null,
+ *     progress: { [actorId]: { [entryId]: PS } },   // odszyfrowywanie
+ *     read: { [actorId]: [entryId] }                // przeczytane strony zakazane
  *   }
  *
  * Starsze dane (`spells` w księdze, osobna flaga `scroll` dla zwoju) są rozpoznawane przy odczycie
@@ -36,7 +41,20 @@ export function setRequirementDefaults(values = {}) {
 
 /** Domyślne dane nowej księgi albo zwoju. */
 export function emptyBook(form = FORM_BOOK) {
-  return { form, language: DEFAULT_LANGUAGE, cover: DEFAULT_COVER, requirements: { ...requirementDefaults }, entries: [] };
+  return {
+    form, language: DEFAULT_LANGUAGE, cover: DEFAULT_COVER, requirements: { ...requirementDefaults }, entries: [],
+    pages: null, cipher: null, forbidden: null, progress: {}, read: {}
+  };
+}
+
+const FORBIDDEN_STRENGTHS = ["minor", "moderate", "major"];
+
+const positiveInteger = (value) => (Number.isInteger(Number(value)) && Number(value) > 0 ? Number(value) : null);
+
+/** Szyfr księgi albo `null`, gdy księga nie jest szyfrowana. */
+function readCipher(cipher) {
+  if (!cipher) return null;
+  return { difficulty: cipher.difficulty || "hard", skill: cipher.skill || "", slPerPage: positiveInteger(cipher.slPerPage) ?? 1 };
 }
 
 const flagsOf = (item) => item?.flags?.[FLAG_SCOPE];
@@ -69,7 +87,12 @@ export function readBook(item) {
     language: source.language || DEFAULT_LANGUAGE,
     cover: source.cover || DEFAULT_COVER,
     requirements: { ...requirementDefaults, ...source.requirements },
-    entries
+    entries,
+    pages: positiveInteger(source.pages),
+    cipher: readCipher(source.cipher),
+    forbidden: FORBIDDEN_STRENGTHS.includes(source.forbidden) ? source.forbidden : null,
+    progress: source.progress ?? {},
+    read: source.read ?? {}
   };
 }
 

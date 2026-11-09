@@ -11,6 +11,7 @@
           <i class="fa-solid {{#if ok}}fa-check{{else}}fa-xmark{{/if}}"></i> {{label}}
         </span>
       {{/each}}
+      {{#if pagesLabel}}<span class="grimoire-badge ok"><i class="fa-solid fa-file-lines"></i> {{pagesLabel}}</span>{{/if}}
       {{#if showCarried}}
         <span class="grimoire-badge {{#if carried}}ok{{else}}missing{{/if}}">
           <i class="fa-solid fa-hand-holding"></i>
@@ -39,11 +40,38 @@
       <label>{{localize "WFRP4E_GRIMOIRE.Edit.Cover"}}
         <input type="color" name="cover" value="{{cover}}">
       </label>
-      <div class="grimoire-reqs">
-        {{#each requirementToggles}}
-          <label><input type="checkbox" data-requirement="{{key}}" {{#if checked}}checked{{/if}}> {{label}}</label>
-        {{/each}}
-      </div>
+      {{#if rules}}
+        <div class="grimoire-reqs">
+          {{#each requirementToggles}}
+            <label><input type="checkbox" data-requirement="{{key}}" {{#if checked}}checked{{/if}}> {{label}}</label>
+          {{/each}}
+        </div>
+        <div class="grimoire-rules">
+          <label>{{localize "WFRP4E_GRIMOIRE.Edit.Pages"}}
+            <input type="number" name="pages" min="1" value="{{rules.pages}}" placeholder="∞">
+          </label>
+          <label>{{localize "WFRP4E_GRIMOIRE.Edit.Cipher"}}
+            <select name="cipherDifficulty">
+              <option value="" {{#if rules.cipherOff}}selected{{/if}}>{{localize "WFRP4E_GRIMOIRE.Edit.CipherNone"}}</option>
+              {{#each rules.difficulties}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+            </select>
+          </label>
+          {{#unless rules.cipherOff}}
+            <label>{{localize "WFRP4E_GRIMOIRE.Edit.CipherSkill"}}
+              <input type="text" name="cipherSkill" value="{{rules.cipherSkill}}" placeholder="{{localize 'WFRP4E_GRIMOIRE.Edit.CipherSkillDefault'}}">
+            </label>
+            <label>{{localize "WFRP4E_GRIMOIRE.Edit.CipherSL"}}
+              <input type="number" name="cipherSL" min="1" value="{{rules.cipherSL}}">
+            </label>
+          {{/unless}}
+          <label>{{localize "WFRP4E_GRIMOIRE.Edit.Forbidden"}}
+            <select name="forbidden">
+              <option value="">{{localize "WFRP4E_GRIMOIRE.Edit.ForbiddenNone"}}</option>
+              {{#each rules.forbidden}}<option value="{{key}}" {{#if selected}}selected{{/if}}>{{label}}</option>{{/each}}
+            </select>
+          </label>
+        </div>
+      {{/if}}
       <span class="grimoire-drop-hint"><i class="fa-solid fa-hand-pointer"></i> {{localize "WFRP4E_GRIMOIRE.Edit.DropHint"}}</span>
     </section>
   {{/if}}
@@ -69,6 +97,7 @@
             <div class="grimoire-entry status-{{status}} {{#if selected}}selected{{/if}}" data-entry-id="{{id}}" data-action="selectEntry">
               <span class="grimoire-entry-name">
                 {{#if statusIcon}}<i class="fa-solid {{statusIcon}}" data-tooltip="{{statusLabel}}"></i>{{/if}}
+                {{#if flawed}}<i class="fa-solid fa-triangle-exclamation grimoire-flawed" data-tooltip="{{flawedLabel}}"></i>{{/if}}
                 {{name}}
               </span>
               <span class="grimoire-entry-cn">{{corner}}</span>
@@ -93,7 +122,7 @@
           <div class="grimoire-details-lore">{{details.subtitle}}</div>
           <h2 class="grimoire-details-name">{{details.name}}</h2>
           {{#if details.hidden}}
-            <p class="grimoire-illegible-note"><i class="fa-solid fa-eye-slash"></i> {{localize "WFRP4E_GRIMOIRE.Illegible"}}</p>
+            <p class="grimoire-illegible-note"><i class="fa-solid fa-eye-slash"></i> {{details.hiddenNote}}</p>
           {{else}}
             <div class="grimoire-stats">
               {{#each details.stats}}<div><span>{{label}}</span><b>{{value}}</b>{{#if hint}}<small>{{hint}}</small>{{/if}}</div>{{/each}}

@@ -111,7 +111,8 @@ describe("model księgi", () => {
     expect(readBook(book)).toEqual({
       form: "book", language: "magick", cover: "#6b2d1f",
       requirements: { readWrite: true, language: false, lore: true, carried: true },
-      entries: [entries[0]]
+      entries: [entries[0]],
+      pages: null, cipher: null, forbidden: null, progress: {}, read: {}
     });
     expect(readBook({ flags: {} })).toBeNull();
     expect(isBook({ flags: {} })).toBe(false);

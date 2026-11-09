@@ -5,15 +5,22 @@
 import { MODULE_ID, I18N, t } from "./constants.mjs";
 import { addEntry, groupEntries, illegible, moveEntry, readBook, removeEntry, writeBook } from "./grimoire-data.mjs";
 import { SPELL_TYPE } from "./spell-data.mjs";
-import { entryFromDrop, typeOf } from "./entry-types.mjs";
+import { entryFromDrop, entryPages, typeOf } from "./entry-types.mjs";
 import { LANGUAGES, normalize } from "./names.mjs";
 import { requirementBadges } from "./requirements.mjs";
 import { bookContext, syncCopies } from "./actors.mjs";
+import { CIPHERED, OPEN, WARDED, decodeNeeded, entryProgress, fits, freePages, pageState, pagesUsed } from "./book-rules.mjs";
+import { copyAction, corruptionLabel, lockedActions, runEntryAction } from "./book-actions.mjs";
 
 const { ApplicationV2, HandlebarsApplicationMixin } = foundry.applications.api;
 const TextEditorImpl = () => foundry.applications.ux.TextEditor.implementation;
 
 export const languageLabel = (key) => (game.i18n.has(`${I18N}.Languages.${key}`) ? t(`Languages.${key}`) : key);
+
+const LOCKED_ICONS = { [CIPHERED]: "fa-lock", [WARDED]: "fa-skull" };
+
+/** Opis wady przepisanego wpisu. */
+const flawText = (type) => `${t("Page.Flawed")}: ${type.flawNote?.() ?? ""}`;
 
 /** Pole wyboru warunku w trybie edycji. */
 const REQUIREMENT_TOGGLES = ["readWrite", "language", "carried", "lore"];
@@ -94,12 +101,15 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
       .filter((entry) => isGM || !typeOf(entry).visible || typeOf(entry).visible(entry, ctx))
       .map((entry) => {
         const type = typeOf(entry);
-        return { entry, type, status: type.status(entry, ctx) };
+        const state = pageState(book, ctx.actorId, entry, entryPages);
+        return { entry, type, state, status: state === OPEN ? type.status(entry, ctx) : state };
       });
+    // Szyfr zasłania także tytuł strony; MG widzi treść, ale stan pozostaje stanem postaci
+    const titleHidden = (row) => hidden || (row.state === CIPHERED && !isGM);
     if (!this.selectedId || !rows.some((r) => r.entry.id === this.selectedId)) this.selectedId = rows[0]?.entry.id ?? null;
 
     const query = normalize(this.search);
-    const visible = rows.filter((r) => !query || hidden || normalize(r.type.name(r.entry)).includes(query));
+    const visible = rows.filter((r) => !query || titleHidden(r) || normalize(r.type.name(r.entry)).includes(query));
     const byId = new Map(visible.map((r) => [r.entry.id, r]));
     const multipleTypes = new Set(rows.map((r) => r.type.id)).size > 1;
     const seenOrders = new Set();
@@ -111,20 +121,27 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
       const firstOfType = !seenOrders.has(group.order);
       seenOrders.add(group.order);
       const labelKey = typeOf(group.entries[0]).labelKey;
+      // Nagłówek działu nie może zdradzać, co kryją strony zaszyfrowane
+      const showType = multipleTypes && firstOfType && labelKey && group.entries.some((entry) => !titleHidden(byId.get(entry.id)));
       return {
         lore: group.key,
-        typeLabel: multipleTypes && firstOfType && labelKey ? game.i18n.localize(labelKey) : null,
+        typeLabel: showType ? game.i18n.localize(labelKey) : null,
         label: hidden ? illegible(group.label) : group.label,
         entries: group.entries.map((entry) => {
           const row = byId.get(entry.id);
           const name = row.type.name(entry);
+          const locked = row.state !== OPEN;
           return {
             id: entry.id,
-            name: hidden ? illegible(name) : name,
-            corner: row.type.corner?.(entry, row.status, ctx) ?? "",
+            name: titleHidden(row) ? illegible(name) : name,
+            corner: row.state === CIPHERED
+              ? `${entryProgress(book, ctx.actorId, entry.id)}/${decodeNeeded(book, entryPages(entry))}`
+              : locked ? "" : row.type.corner?.(entry, row.status, ctx) ?? "",
             status: row.status,
-            statusLabel: row.type.statusLabel(row.status),
-            statusIcon: row.type.statusIcon?.(row.status) ?? "",
+            statusLabel: locked ? t(`Page.${row.state}`) : row.type.statusLabel(row.status),
+            statusIcon: locked ? LOCKED_ICONS[row.state] : row.type.statusIcon?.(row.status) ?? "",
+            flawed: Boolean(entry.flawed),
+            flawedLabel: entry.flawed ? flawText(row.type) : "",
             selected: entry.id === this.selectedId
           };
         })
@@ -134,22 +151,33 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
     const selected = rows.find((r) => r.entry.id === this.selectedId);
     let details = null;
     if (selected) {
-      const name = selected.type.name(selected.entry);
-      const info = await selected.type.details(selected.entry, selected.status, ctx);
+      const { entry, type, state } = selected;
+      const locked = state !== OPEN;
+      const concealed = hidden || (locked && !isGM);
+      const name = type.name(entry);
+      const info = await type.details(entry, locked ? "none" : selected.status, ctx);
+      const copy = !locked && !hidden ? copyAction(this.book, entry, selected.status, ctx) : null;
+      const baseNote = locked
+        ? t(`Page.Note.${state}`, { strength: book.forbidden ? corruptionLabel(book.forbidden).toLocaleLowerCase() : "" })
+        : info.note;
       details = {
-        id: selected.entry.id,
-        name: hidden ? illegible(name) : name,
-        subtitle: hidden ? illegible(info.subtitle) : info.subtitle,
+        id: entry.id,
+        name: titleHidden(selected) ? illegible(name) : name,
+        subtitle: titleHidden(selected) ? illegible(info.subtitle) : concealed ? "" : info.subtitle,
         stats: info.stats,
-        description: hidden ? "" : info.description,
-        hidden,
+        description: concealed ? "" : info.description,
+        hidden: concealed,
+        hiddenNote: hidden ? t("Illegible") : locked ? t(`Page.Sealed.${state}`) : "",
         status: selected.status,
-        note: info.note,
-        actions: hidden ? [] : info.actions
+        note: entry.flawed && !locked ? `${flawText(type)} ${baseNote}`.trim() : baseNote,
+        actions: hidden ? [] : locked ? lockedActions(state, ctx) : [...info.actions, ...(copy ? [copy] : [])]
       };
     }
 
     const hasSpells = book.entries.some((entry) => entry.type === SPELL_TYPE) || book.entries.length === 0;
+    const difficulties = Object.entries(game.wfrp4e?.config?.difficultyLabels ?? {}).map(([key, label]) => ({
+      key, label: game.i18n.localize(label), selected: book.cipher?.difficulty === key
+    }));
     return {
       book: this.book,
       cover: book.cover,
@@ -163,6 +191,16 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
       requirementToggles: REQUIREMENT_TOGGLES
         .filter((key) => key !== "lore" || hasSpells)
         .map((key) => ({ key, label: t(`Edit.Needs.${key}`), checked: book.requirements[key] })),
+      pagesLabel: book.pages ? t("Badge.pages", { used: pagesUsed(book, entryPages), total: book.pages }) : "",
+      // Reguły księgi ustala MG: inaczej gracz sam zdjąłby szyfr ze swojej księgi
+      rules: isGM ? {
+        pages: book.pages ?? "",
+        cipherOff: !book.cipher,
+        difficulties,
+        cipherSkill: book.cipher?.skill ?? "",
+        cipherSL: book.cipher?.slPerPage ?? 1,
+        forbidden: ["minor", "moderate", "major"].map((key) => ({ key, label: corruptionLabel(key), selected: book.forbidden === key }))
+      } : null,
       actorName: actor?.name,
       carried: ctx.carried,
       showCarried: Boolean(actor) && book.requirements.carried,
@@ -203,6 +241,17 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
       }));
     }
 
+    html.querySelector("input[name=pages]")?.addEventListener("change", (ev) => {
+      const pages = Number.parseInt(ev.target.value, 10);
+      this.#updateBook({ pages: pages > 0 ? pages : null });
+    });
+    html.querySelector("select[name=forbidden]")?.addEventListener("change", (ev) => this.#updateBook({ forbidden: ev.target.value || null }));
+    html.querySelector("select[name=cipherDifficulty]")?.addEventListener("change", (ev) => this.#updateBook({
+      cipher: ev.target.value ? { skill: "", slPerPage: 1, ...this.data.cipher, difficulty: ev.target.value } : null
+    }));
+    html.querySelector("input[name=cipherSkill]")?.addEventListener("change", (ev) => this.#updateBook({ cipher: { ...this.data.cipher, skill: ev.target.value.trim() } }));
+    html.querySelector("input[name=cipherSL]")?.addEventListener("change", (ev) => this.#updateBook({ cipher: { ...this.data.cipher, slPerPage: Number.parseInt(ev.target.value, 10) || 1 } }));
+
     // Element główny okna jest ten sam między renderami – nasłuch tylko raz
     if (this.canEdit && this._dropBoundTo !== html) {
       this._dropBoundTo = html;
@@ -229,6 +278,9 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
     if (!found) return ui.notifications.warn(t("Notify.NotWritable"));
     const { entry, type } = found;
     if (type.canWrite && !type.canWrite()) return ui.notifications.warn(game.i18n.localize(type.writeDeniedKey ?? `${I18N}.Notify.NotWritable`));
+    if (!fits(this.data, entry, entryPages)) {
+      return ui.notifications.warn(t("Notify.NoRoom", { needed: entryPages(entry), free: freePages(this.data, entryPages) }));
+    }
     const { book, added } = addEntry(this.data, entry, type.same);
     if (!added) return ui.notifications.info(t("Notify.AlreadyInBook", { name: type.name(entry) }));
     this.selectedId = entry.id;
@@ -250,7 +302,7 @@ export class GrimoireApp extends HandlebarsApplicationMixin(ApplicationV2) {
 
   static async #onEntryAction(_event, target) {
     const entry = this.#entry(target);
-    if (entry) await typeOf(entry).run(target.dataset.entryAction, entry, bookContext(this.book));
+    if (entry) await runEntryAction(target.dataset.entryAction, this.book, entry, bookContext(this.book));
   }
 
   static #onToggleEdit() {

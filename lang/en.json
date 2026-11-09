@@ -26,7 +26,8 @@
       "readWrite": "Read/Write",
       "language": "Language ({language})",
       "carried": "Carried",
-      "notCarried": "Not carried"
+      "notCarried": "Not carried",
+      "pages": "{used}/{total} pages"
     },
     "Status": {
       "known": "You know this spell",
@@ -77,7 +78,15 @@
         "language": "Reader must know the language",
         "carried": "Must be carried",
         "lore": "Caster must know the Lore"
-      }
+      },
+      "Pages": "Pages",
+      "Cipher": "Cipher",
+      "CipherNone": "None",
+      "CipherSkill": "Test skill",
+      "CipherSkillDefault": "Book's language",
+      "CipherSL": "SL per page",
+      "Forbidden": "Forbidden",
+      "ForbiddenNone": "No"
     },
     "Learn": {
       "Title": "Memorise a spell",
@@ -101,7 +110,8 @@
     },
     "Notify": {
       "AlreadyInBook": "{name} is already in this tome.",
-      "NotWritable": "This can't be written here."
+      "NotWritable": "This can't be written here.",
+      "NoRoom": "Not enough pages: this needs {needed}, {free} free."
     },
     "Settings": {
       "ConsumeOnFailureName": "Failed scroll test uses up the scroll",
@@ -167,6 +177,37 @@
     "CreateHint": "A book of spells and other writings. It is a Books and Documents trapping, so it works with the inventory and trading.",
     "Types": {
       "spell": "Spells"
+    },
+    "Page": {
+      "ciphered": "Ciphered page",
+      "warded": "Forbidden page",
+      "Note": {
+        "ciphered": "This page is written in cipher. Each attempt adds the SL you score; a fumble or a failure of -3 SL or worse loses the work so far.",
+        "warded": "Reading this page is a {strength} exposure to Corruption."
+      },
+      "Sealed": {
+        "ciphered": "The page is written in cipher.",
+        "warded": "You have not dared to read this page yet."
+      },
+      "Decipher": "Decipher",
+      "DecipherTitle": "Deciphering: {book}",
+      "DecipherProgress": "Worked out {progress}/{needed} SL of this page.",
+      "Deciphered": "{name} is deciphered.",
+      "DecipherLost": "The notes fall apart: progress on this page is lost.",
+      "ReadForbidden": "Read the forbidden page",
+      "ForbiddenConfirm": "Reading this page is a {strength} exposure to Corruption. Read it?",
+      "NeedsSkill": "This needs the skill {skill}.",
+      "Copy": "Copy to another book",
+      "CopyTitle": "Copying into {book}",
+      "CopyTarget": "Target book",
+      "CopyCost": "Materials: {cost}",
+      "NoTarget": "No other book of this character has room for this entry.",
+      "NoMaterials": "Missing materials: {cost}",
+      "Copied": "{name} copied into {book}.",
+      "CopiedFlawed": "{name} copied into {book}, with errors.",
+      "CopyRuined": "The copy of {name} is ruined.",
+      "Flawed": "Flawed copy",
+      "FlawSpell": "CN +{penalty}."
     }
   }
 }

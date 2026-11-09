@@ -10,6 +10,8 @@ import { MODULE_ID, t, log } from "./constants.mjs";
 import { COPY_FLAG, FORM_BOOK, entriesOfType, isGrimoire, readBook } from "./grimoire-data.mjs";
 import { SPELL_TYPE, spellLores, spellSummary } from "./spell-data.mjs";
 import { accessReason, evaluateReading, spellStatus } from "./requirements.mjs";
+import { openEntries as openFor } from "./book-rules.mjs";
+import { entryPages } from "./entry-types.mjs";
 import { normalize } from "./names.mjs";
 
 /** Czy zaklęcie jest kopią z księgi (nie liczy się jako znane). */
@@ -53,11 +55,17 @@ export function bookContext(item) {
     book,
     form: book.form,
     actor,
+    actorId: actor?.id ?? null,
     view,
     reading: view ? evaluateReading(view, book) : OPEN_READING,
     carried: isCarried(item),
     isGM: game.user.isGM
   };
+}
+
+/** Wpisy księgi dostępne jej właścicielowi (bez stron zaszyfrowanych i zakazanych). */
+export function openEntries(item) {
+  return openFor(readBook(item), item.actor?.id ?? null, entryPages);
 }
 
 /** Czy właściciel może korzystać z księgi; `reason`: "carried", "readWrite", "language" albo null. */
@@ -87,7 +95,7 @@ export function entryStatuses(book) {
   const loreLabel = (lore) => game.i18n.localize(config.magicLores?.[lore] ?? lore);
   const view = actorView(actor);
   const reading = evaluateReading(view, grimoire);
-  return entriesOfType(grimoire, SPELL_TYPE).map((entry) => ({
+  return entriesOfType({ entries: openEntries(book) }, SPELL_TYPE).map((entry) => ({
     entry,
     status: spellStatus(view, spellSummary(entry.data), reading, grimoire.requirements, loreLabel)
   }));

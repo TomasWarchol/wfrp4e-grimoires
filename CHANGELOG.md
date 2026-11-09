@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.0
+- **Pages**: a tome can have a page limit. Entries take up room (longer spells take more) and the header shows what is used.
+- **Ciphers**: pages can be written in cipher and are worked out with tests. Progress belongs to each character, a bad failure loses it, and the page stays hidden until it is done.
+- **Forbidden tomes**: reading a page for the first time is an exposure to Corruption of the strength set on the book.
+- **Copying**: an entry can be copied into another of the character's books with a test. A failure leaves a flawed copy, and a bad failure ruins it. Other modules can add a cost with `registerCopyCost`.
+- All of this is off by default and set per book in edit mode. Only the GM sees these rules and the reading requirements.
+
 ## 0.5.0
 - **Book engine**: a tome now holds typed entries. Spells are one type; other modules add their own with `registerEntryType` (Old World Alchemy adds recipes). One tome can hold several types, and entries of a disabled module stay in the book.
 - A scroll is a one-entry tome, stored in the same format.

@@ -22,6 +22,10 @@
  *   canWrite()                    → (opcjonalne) czy użytkownik może wpisywać i usuwać ten typ
  *   writeDeniedKey                → (opcjonalne) komunikat, gdy nie może
  *   visible(entry, ctx)           → (opcjonalne) czy gracz widzi wpis
+ *   pages(entry)                  → (opcjonalne) ile stron zajmuje wpis, domyślnie 1
+ *   canCopy(entry, status, ctx)   → (opcjonalne) czy postać może przepisać wpis
+ *   applyFlaw(entry)              → (opcjonalne) wpis po nieudanym przepisaniu
+ *   flawNote()                    → (opcjonalne) opis skutku wady
  *
  * `ctx` – patrz `bookContext` w actors.mjs.
  */
@@ -66,6 +70,11 @@ export const UNKNOWN_TYPE = Object.freeze({
 /** Typ wpisu; dla nieznanego – zastępczy. */
 export function typeOf(entry) {
   return TYPES.get(entry?.type) ?? UNKNOWN_TYPE;
+}
+
+/** Liczba stron zajmowanych przez wpis. */
+export function entryPages(entry) {
+  return Math.max(1, typeOf(entry).pages?.(entry) ?? 1);
 }
 
 /** Pierwszy typ, który rozpoznaje upuszczone dane. */
